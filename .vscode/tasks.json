@@ -1,0 +1,41 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "C/C++: g++-10 build all .cpp files",
+            "command": "/usr/bin/g++-10",
+            "args": [
+                "-g",
+                "-std=c++20",
+                "$(find",
+                "code",
+                "-type",
+                "f",
+                "-iregex",
+                "'.*\\.cpp')",
+                "-o",
+                "UIDBTree"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Run only",
+            "command": "${workspaceFolder}/UIDBTree",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        }
+    ]
+}
