@@ -3,7 +3,7 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "C/C++: g++-10 build all .cpp files",
+            "label": "g++ c++20 build",
             "command": "/usr/bin/g++-10",
             "args": [
                 "-g",
@@ -30,11 +30,21 @@
         },
         {
             "type": "shell",
-            "label": "Run only",
+            "label": "g++ c++20 build and run",
             "command": "${workspaceFolder}/UIDBTree",
             "group": {
                 "kind": "test",
                 "isDefault": true
+            },
+            "dependsOn": "g++ c++20 build"
+        },
+        {
+            "type": "shell",
+            "label": "Run only",
+            "command": "${workspaceFolder}/UIDBTree",
+            "group": {
+                "kind": "test",
+                "isDefault": false
             }
         }
     ]
