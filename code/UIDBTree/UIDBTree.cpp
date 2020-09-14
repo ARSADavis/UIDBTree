@@ -32,8 +32,8 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
 {
     //Create the node.
     UIDBNode* newNode = new UIDBNode();
-    newNode->SetKey(key);
-    newNode->SetValue(value);
+    newNode->key = key;
+    newNode->value = value;
 
     //Figure out where to insert it.
     UIDBNode* currentNode = rootNode.get();
@@ -51,12 +51,20 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
             if (UIDBTree::compareNodes(currentNode, newNode))
             {
                 //newNode's key >= currentNode's key; go to the right child.
-                currentNode = currentNode->GetRightChildNode();
+                currentNode = currentNode->rightChildNode.get();
                 if (currentNode == nullptr)
                 {
                     //Now that the empty leaf node is found, insert the new node there.
-                    lastNode->SetRightChildNode(newNode);
+                    if (lastNode->rightChildNode == nullptr)
+                    {
+                        ++lastNode->subtreeBalance;
+                    }
+                    lastNode->rightChildNode.reset(newNode);
                     break;
+                }
+                else
+                {
+                    ++lastNode->subtreeBalance;
                 }
             }
             else
@@ -66,8 +74,16 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                 if (currentNode == nullptr)
                 {
                     //Now that the empty leaf node is found, insert the new node there.
-                    lastNode->SetLeftChildNode(newNode);
+                    if (lastNode->leftChildNode == nullptr)
+                    {
+                        --lastNode->subtreeBalance;
+                    }
+                    lastNode->leftChildNode.reset(newNode);
                     break;
+                }
+                else
+                {
+                    --lastNode->subtreeBalance;
                 }
             }
         }
@@ -122,11 +138,11 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     UIDBNode* leftChildNode = convertMe->GetLeftChildNode();
     UIDBNode* rightChildNode = convertMe->GetRightChildNode();
 
-    //Convert right child, if any.
     for (std::wstring c: startingCharacters)
     {
         wss << c;
     }
+    //Convert right child, if any.
     if (rightChildNode == nullptr)
     {
         //No right child.
@@ -141,11 +157,11 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
         startingCharacters.pop_back();
     }
 
-    //Convert left child, if any.
     for (std::wstring c: startingCharacters)
     {
         wss << c;
     }
+    //Convert left child, if any.
     if (leftChildNode == nullptr)
     {
         //No left child.

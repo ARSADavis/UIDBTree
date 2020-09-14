@@ -1,6 +1,6 @@
 #include "UIDBNode.h"
 
-UIDBNode::UIDBNode()
+UIDBNode::UIDBNode(): subtreeBalance(0)
 {
 
 }
@@ -18,35 +18,14 @@ UIDBNode* UIDBNode::GetRightChildNode()
 {
     return rightChildNode.get();
 }
-UIDBNode* UIDBNode::GetNextNode()
-{
-    return nextNode.get();
-}
-UIDBNode* UIDBNode::GetPreviousNode()
-{
-    return previousNode.get();
-}
-
-void UIDBNode::SetParentNode(UIDBNode* parentNode)
-{
-    this->parentNode.reset(parentNode);
-}
-void UIDBNode::SetLeftChildNode(UIDBNode* leftChildNode)
-{
-    this->leftChildNode.reset(leftChildNode);
-}
-void UIDBNode::SetRightChildNode(UIDBNode* rightChildNode)
-{
-    this->rightChildNode.reset(rightChildNode);
-}
-void UIDBNode::SetNextNode(UIDBNode* nextNode)
-{
-    this->nextNode.reset(nextNode);
-}
-void UIDBNode::SetPreviousNode(UIDBNode* previousNode)
-{
-    this->previousNode.reset(previousNode);
-}
+//UIDBNode* UIDBNode::GetNextNode()
+//{
+//    return nextNode.get();
+//}
+//UIDBNode* UIDBNode::GetPreviousNode()
+//{
+//    return previousNode.get();
+//}
 
 
 const ByteVector UIDBNode::GetKey()
@@ -56,15 +35,6 @@ const ByteVector UIDBNode::GetKey()
 const ByteVector UIDBNode::GetValue()
 {
     return value;
-}
-
-void UIDBNode::SetKey(ByteVector key)
-{
-    this->key = key;
-}
-void UIDBNode::SetValue(ByteVector value)
-{
-    this->value = value;
 }
 
 
@@ -77,9 +47,8 @@ std::wstring UIDBNode::ToWString(UIDBNode* convertMe)
     else
     {
         std::wstringstream wss;
-        const ByteVector key = convertMe->GetKey();
-        const ByteVector value = convertMe->GetValue();
-        wss << L"{ \"" << BVToWString(key) << L"\", \"" << BVToWString(value) << L"\" }";
+        wss << L"(" << (int)convertMe->subtreeBalance << ") { \"" << BVToWString(convertMe->key);
+        wss << L"\", \"" << BVToWString(convertMe->value) << L"\" }";
         return wss.str();
     }
 }

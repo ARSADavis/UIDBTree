@@ -9,8 +9,16 @@
 #include <sstream>
 
 #define ByteVector std::vector<unsigned char>
-#define BVToString(bv) std::string(bv.begin(), bv.end())
-#define BVToWString(bv) std::wstring(bv.begin(), bv.end())
+
+static inline std::string BVToString(ByteVector bv)
+{
+    return std::string(bv.begin(), bv.end());
+}
+
+static inline std::wstring BVToWString(ByteVector bv)
+{
+    return std::wstring(bv.begin(), bv.end());
+}
 
 static inline ByteVector StringToBV(std::string str)
 {
