@@ -9,8 +9,8 @@ enum class UIDBTreeResultCode: unsigned char
     Size
 };
 
-static std::map<UIDBTreeResultCode, std::string> UIDBTreeResultCodeMap({
-    { UIDBTreeResultCode::Success, "Success" },
-    { UIDBTreeResultCode::Error, "Error" },
-    { UIDBTreeResultCode::Size, "Size" },
+static std::map<UIDBTreeResultCode, std::wstring> UIDBTreeResultCodeMap({
+    { UIDBTreeResultCode::Success, L"Success" },
+    { UIDBTreeResultCode::Error, L"Error" },
+    { UIDBTreeResultCode::Size, L"Size" }
 });

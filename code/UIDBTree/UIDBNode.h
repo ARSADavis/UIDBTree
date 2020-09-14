@@ -8,11 +8,23 @@ class UIDBNode
     public:
         UIDBNode();
 
+        UIDBNode* GetParentNode();
+        UIDBNode* GetLeftChildNode();
+        UIDBNode* GetRightChildNode();
+        UIDBNode* GetNextNode();
+        UIDBNode* GetPreviousNode();
+        void SetParentNode(UIDBNode* parentNode);
+        void SetLeftChildNode(UIDBNode* leftChildNode);
+        void SetRightChildNode(UIDBNode* rightChildNode);
+        void SetNextNode(UIDBNode* nextNode);
+        void SetPreviousNode(UIDBNode* previousNode);
+
         const ByteVector GetKey();
         const ByteVector GetValue();
-
         void SetKey(ByteVector key);
         void SetValue(ByteVector value);
+
+        static std::wstring ToWString(UIDBNode* convertMe);
 
     private:
         std::unique_ptr<UIDBNode> parentNode, leftChildNode, rightChildNode, nextNode, previousNode;
@@ -20,21 +32,3 @@ class UIDBNode
         ByteVector value;
         std::size_t childNodeCount;
 };
-
-static std::string ObservedNodeToString(observer_ptr<UIDBNode> convertMe)
-{
-    if (convertMe.get() == nullptr)
-    {
-        return "<nullptr>";
-    }
-    else
-    {
-        std::stringstream resultString;
-        UIDBNode* convertMeRaw = convertMe.get();
-        const ByteVector key = convertMeRaw->GetKey();
-        const ByteVector value = convertMeRaw->GetValue();
-        resultString << "{ \"" << std::string(key.begin(), key.end()) << "\", \"" <<
-            std::string(value.begin(), value.end()) << "\" }";
-        return resultString.str();
-    }
-}

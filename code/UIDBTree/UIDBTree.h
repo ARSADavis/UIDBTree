@@ -10,14 +10,21 @@ class UIDBTree
         ~UIDBTree();
 
         bool IsEmpty();
-        observer_ptr<UIDBNode> GetRootNode();
+        UIDBNode* GetRootNode();
 
-        //observer_ptr<UIDBNode> GetLowestNodeByKey();
-        //observer_ptr<UIDBNode> GetHighestNodeByKey();
-        std::pair<UIDBTreeResultCode, observer_ptr<UIDBNode>> InsertNodeByKey(ByteVector key, ByteVector value);
-        //std::pair<UIDBTreeResultCode, std::vector<observer_ptr<UIDBNode>>> FindNodesByKey();
+        //UIDBNode* GetLowestNodeByKey();
+        //UIDBNode* GetHighestNodeByKey();
+        std::pair<UIDBTreeResultCode, UIDBNode*> InsertNodeByKey(ByteVector key, ByteVector value);
+        //std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> FindNodesByKey();
         //UIDBTreeResultCode DeleteNodeByKey();
+
+        static std::wstring ToWString(UIDBTree* convertMe);
 
     private:
         std::unique_ptr<UIDBNode> rootNode;
+
+        static bool compareNodes(UIDBNode* firstNode, UIDBNode* secondNode);
+
+        static void treeNodeToStringRecursive(std::wstringstream& wss, std::vector<std::wstring> startingCharacters,
+            UIDBNode* convertMe);
 };
