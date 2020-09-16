@@ -24,7 +24,9 @@ class UIDBNode
     private:
         std::unique_ptr<UIDBNode> parentNode, leftChildNode, rightChildNode; //nextNode, previousNode
         //std::size_t childNodeCount;
+        //Note: Subtree balance does not concern itself with duplicate values, only nodes.
         char subtreeBalance;
         ByteVector key;
+        //A vector of values, in order to be able to support duplicates.
         ByteVectorVector values;
 };

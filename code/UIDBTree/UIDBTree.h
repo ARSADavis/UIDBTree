@@ -6,7 +6,7 @@
 class UIDBTree
 {
     public:
-        UIDBTree(bool duplicatesAllowed);
+        UIDBTree(bool duplicatesAllowed = true);
         ~UIDBTree();
 
         bool IsEmpty();

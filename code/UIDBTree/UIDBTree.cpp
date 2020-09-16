@@ -1,7 +1,7 @@
 #include "UIDBTree.h"
 #include "UIDBTreeCharacters.h"
 
-UIDBTree::UIDBTree(bool duplicatesAllowed = true)
+UIDBTree::UIDBTree(bool duplicatesAllowed)
 {
     this->duplicatesAllowed = duplicatesAllowed;
 }
@@ -35,58 +35,63 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
     if (currentNode == nullptr)
     {
         //Create the root node.
-        UIDBNode* newNode = new UIDBNode();
-        newNode->key = key;
-        newNode->values = ByteVectorVector({ value });
-        rootNode.reset(newNode);
+        currentNode = new UIDBNode();
+        currentNode->key = key;
+        currentNode->values = ByteVectorVector({ value });
+        rootNode.reset(currentNode);
         //No need for rebalancing.
-        return { UIDBTreeResultCode::Success, newNode };
+        return { UIDBTreeResultCode::Success, currentNode };
     }
     else
     {
         //Compare the keys and navigate to one of the children. Repeat until an empty leaf node is found. Insert there.
-        UIDBNode* lastNode;
+        std::vector<UIDBNode*> traversalHistory;
         char comparisonValue;
         do
         {
+            //Keep track of the traversal history down to the inserted node, for later rebalancing, if needed.
+            traversalHistory.push_back(currentNode);
             //Compare the current node's key with the given key, to decide what to do next.
-            lastNode = currentNode;
             comparisonValue = UIDBTree::compareKeys(currentNode->key, key);
             if (comparisonValue > 0)
             {
-                //new key > current key; navigate to the right child.
-                currentNode = currentNode->rightChildNode.get();
+                //New key > current key.
+
                 //Balance of the ancestral subtree tips to the right one, whether the new node is inserted here or not.
-                ++lastNode->subtreeBalance;
+                ++traversalHistory.back()->subtreeBalance;
+                //Navigate to the right child.
+                currentNode = currentNode->rightChildNode.get();
                 if (currentNode == nullptr)
                 {
                     //Now that the empty leaf node is found, insert the new node there.
-                    UIDBNode* newNode = new UIDBNode();
-                    newNode->key = key;
-                    newNode->values = ByteVectorVector({ value });
-                    lastNode->rightChildNode.reset(newNode);
+                    currentNode = new UIDBNode();
+                    currentNode->key = key;
+                    currentNode->values = ByteVectorVector({ value });
+                    traversalHistory.back()->rightChildNode.reset(currentNode);
                     break;
                 }
             }
             else if (comparisonValue < 0)
             {
-                //new key < current key; navigate to the left child.
-                currentNode = currentNode->leftChildNode.get();
+                //New key < current key.
+
                 //Balance of the ancestral subtree tips to the left one, whether the new node is inserted here or not.
-                --lastNode->subtreeBalance;
+                --traversalHistory.back()->subtreeBalance;
+                //Navigate to the left child.
+                currentNode = currentNode->leftChildNode.get();
                 if (currentNode == nullptr)
                 {
                     //Now that the empty leaf node is found, insert the new node there.
-                    UIDBNode* newNode = new UIDBNode();
-                    newNode->key = key;
-                    newNode->values = ByteVectorVector({ value });
-                    lastNode->leftChildNode.reset(newNode);
+                    currentNode = new UIDBNode();
+                    currentNode->key = key;
+                    currentNode->values = ByteVectorVector({ value });
+                    traversalHistory.back()->leftChildNode.reset(currentNode);
                     break;
                 }
             }
             else
             {
-                //new key == current key; append duplicate value, if allowed.
+                //New key == current key; append duplicate value, if allowed.
                 if (duplicatesAllowed)
                 {
                     //Duplicates allowed; append the value.
@@ -106,10 +111,9 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
 
         //If a new node was inserted as a child node in particular, then there may need to be a rebalance. Check for the
         //need to rebalance each of the inserted node's ancestors, starting with the root node and working down to the
-        //inserted node. This particular rebalancing scheme requires starting at the root, because it can upset the
-        //balance at lower levels but not vice versa.
-        currentNode = lastNode;
-        do
+        //parent of the inserted node. This particular rebalancing scheme requires starting at the root, because it can
+        //upset the balance at lower levels but not vice versa.
+        for (UIDBNode* ancestralNode: traversalHistory)
         {
             //Only a subtree balance of > 1 or < -1 requires a rebalancing.
             if (currentNode->subtreeBalance > 1)
@@ -127,12 +131,9 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                 //TODO
             }
         }
-        while (true);
     }
 
-
-    //TODO
-    //return { UIDBTreeResultCode::Success, newNode };
+    return { UIDBTreeResultCode::Success, currentNode };
 }
 //std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> UIDBTree::FindNodesByKey()
 //{
