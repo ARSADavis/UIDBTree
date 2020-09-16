@@ -32,9 +32,9 @@ const ByteVector UIDBNode::GetKey()
 {
     return key;
 }
-const ByteVector UIDBNode::GetValue()
+const ByteVectorVector UIDBNode::GetValues()
 {
-    return value;
+    return values;
 }
 
 
@@ -48,7 +48,7 @@ std::wstring UIDBNode::ToWString(UIDBNode* convertMe)
     {
         std::wstringstream wss;
         wss << L"(" << (int)convertMe->subtreeBalance << ") { \"" << BVToWString(convertMe->key);
-        wss << L"\", \"" << BVToWString(convertMe->value) << L"\" }";
+        wss << L"\", \"" << BVVToWString(convertMe->values) << L"\" }";
         return wss.str();
     }
 }

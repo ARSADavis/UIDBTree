@@ -6,7 +6,7 @@
 class UIDBTree
 {
     public:
-        UIDBTree();
+        UIDBTree(bool duplicatesAllowed);
         ~UIDBTree();
 
         bool IsEmpty();
@@ -22,8 +22,9 @@ class UIDBTree
 
     private:
         std::unique_ptr<UIDBNode> rootNode;
+        bool duplicatesAllowed;
 
-        static bool compareNodes(UIDBNode* firstNode, UIDBNode* secondNode);
+        static char compareKeys(ByteVector firstKey, ByteVector secondKey);
 
         static void treeNodeToStringRecursive(std::wstringstream& wss, std::vector<std::wstring> startingCharacters,
             UIDBNode* convertMe);

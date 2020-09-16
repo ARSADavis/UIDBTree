@@ -17,7 +17,7 @@ class UIDBNode
         //UIDBNode* GetPreviousNode();
 
         const ByteVector GetKey();
-        const ByteVector GetValue();
+        const ByteVectorVector GetValues();
 
         static std::wstring ToWString(UIDBNode* convertMe);
 
@@ -26,5 +26,5 @@ class UIDBNode
         //std::size_t childNodeCount;
         char subtreeBalance;
         ByteVector key;
-        ByteVector value;
+        ByteVectorVector values;
 };
