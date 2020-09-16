@@ -21,10 +21,13 @@ class UIDBTree
         static std::wstring ToWString(UIDBTree* convertMe);
 
     private:
+        std::size_t treeNodeCount;
         std::unique_ptr<UIDBNode> rootNode;
         bool duplicatesAllowed;
 
         static char compareKeys(ByteVector firstKey, ByteVector secondKey);
+
+        static void rebalanceFrom(UIDBNode* startNode);
 
         static void treeNodeToStringRecursive(std::wstringstream& wss, std::vector<std::wstring> startingCharacters,
             UIDBNode* convertMe);

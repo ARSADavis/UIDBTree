@@ -4,6 +4,7 @@
 UIDBTree::UIDBTree(bool duplicatesAllowed)
 {
     this->duplicatesAllowed = duplicatesAllowed;
+    treeNodeCount = 0;
 }
 
 UIDBTree::~UIDBTree()
@@ -39,6 +40,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
         currentNode->key = key;
         currentNode->values = ByteVectorVector({ value });
         rootNode.reset(currentNode);
+        ++treeNodeCount;
         //No need for rebalancing.
         return { UIDBTreeResultCode::Success, currentNode };
     }
@@ -68,6 +70,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                     currentNode->key = key;
                     currentNode->values = ByteVectorVector({ value });
                     lastNode->rightChildNode.reset(currentNode);
+                    ++treeNodeCount;
                     break;
                 }
             }
@@ -86,6 +89,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                     currentNode->key = key;
                     currentNode->values = ByteVectorVector({ value });
                     lastNode->leftChildNode.reset(currentNode);
+                    ++treeNodeCount;
                     break;
                 }
             }
@@ -108,31 +112,8 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
             }
         }
         while (true);
-
-        //If a new node was inserted as a child node in particular, then there may need to be a rebalance. Check for the
-        //need to rebalance each of the inserted node's ancestors, starting with the parent of the inserted node and
-        //working up to the root node.
-        currentNode = lastNode;
-        do
-        {
-            //Only a subtree balance of > 1 or < -1 requires a rebalancing.
-            if (currentNode->subtreeBalance > 1)
-            {
-                //Right subtree is too heavy compared to left subtree.
-
-
-                //TODO
-            }
-            else if (currentNode->subtreeBalance < -1)
-            {
-                //Left subtree is too heavy compared to right subtree.
-
-
-                //TODO
-            }
-            currentNode = currentNode->parentNode.get();
-        }
-        while (currentNode != nullptr);
+        //If a new node was inserted as a child node in particular, then there may need to be a rebalance.
+        rebalanceFrom(lastNode);
     }
 
     return { UIDBTreeResultCode::Success, currentNode };
@@ -173,6 +154,33 @@ std::wstring UIDBTree::ToWString(UIDBTree* convertMe)
 char UIDBTree::compareKeys(ByteVector firstKey, ByteVector secondKey)
 {
     return (secondKey > firstKey ? 1 : (secondKey < firstKey ? -1 : 0));
+}
+
+
+void UIDBTree::rebalanceFrom(UIDBNode* startNode)
+{
+    UIDBNode* currentNode = startNode;
+    //Check for the need to rebalance each of the inserted node's ancestors, starting with the parent of the
+    //inserted node and working up to the root node.
+    do
+    {
+        if (currentNode->subtreeBalance > 1)
+        {
+            //Right subtree is too heavy compared to left subtree.
+
+
+            //TODO
+        }
+        else if (currentNode->subtreeBalance < -1)
+        {
+            //Left subtree is too heavy compared to right subtree.
+
+
+            //TODO
+        }
+        currentNode = currentNode->parentNode.get();
+    }
+    while (currentNode != nullptr);
 }
 
 
