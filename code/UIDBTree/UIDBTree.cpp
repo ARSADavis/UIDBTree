@@ -45,12 +45,12 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
     else
     {
         //Compare the keys and navigate to one of the children. Repeat until an empty leaf node is found. Insert there.
-        std::vector<UIDBNode*> traversalHistory;
+        UIDBNode* lastNode;
         char comparisonValue;
         do
         {
             //Keep track of the traversal history down to the inserted node, for later rebalancing, if needed.
-            traversalHistory.push_back(currentNode);
+            lastNode = currentNode;
             //Compare the current node's key with the given key, to decide what to do next.
             comparisonValue = UIDBTree::compareKeys(currentNode->key, key);
             if (comparisonValue > 0)
@@ -58,7 +58,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                 //New key > current key.
 
                 //Balance of the ancestral subtree tips to the right one, whether the new node is inserted here or not.
-                ++traversalHistory.back()->subtreeBalance;
+                ++lastNode->subtreeBalance;
                 //Navigate to the right child.
                 currentNode = currentNode->rightChildNode.get();
                 if (currentNode == nullptr)
@@ -67,7 +67,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                     currentNode = new UIDBNode();
                     currentNode->key = key;
                     currentNode->values = ByteVectorVector({ value });
-                    traversalHistory.back()->rightChildNode.reset(currentNode);
+                    lastNode->rightChildNode.reset(currentNode);
                     break;
                 }
             }
@@ -76,7 +76,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                 //New key < current key.
 
                 //Balance of the ancestral subtree tips to the left one, whether the new node is inserted here or not.
-                --traversalHistory.back()->subtreeBalance;
+                --lastNode->subtreeBalance;
                 //Navigate to the left child.
                 currentNode = currentNode->leftChildNode.get();
                 if (currentNode == nullptr)
@@ -85,7 +85,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
                     currentNode = new UIDBNode();
                     currentNode->key = key;
                     currentNode->values = ByteVectorVector({ value });
-                    traversalHistory.back()->leftChildNode.reset(currentNode);
+                    lastNode->leftChildNode.reset(currentNode);
                     break;
                 }
             }
@@ -110,10 +110,10 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
         while (true);
 
         //If a new node was inserted as a child node in particular, then there may need to be a rebalance. Check for the
-        //need to rebalance each of the inserted node's ancestors, starting with the root node and working down to the
-        //parent of the inserted node. This particular rebalancing scheme requires starting at the root, because it can
-        //upset the balance at lower levels but not vice versa.
-        for (UIDBNode* ancestralNode: traversalHistory)
+        //need to rebalance each of the inserted node's ancestors, starting with the parent of the inserted node and
+        //working up to the root node.
+        currentNode = lastNode;
+        do
         {
             //Only a subtree balance of > 1 or < -1 requires a rebalancing.
             if (currentNode->subtreeBalance > 1)
@@ -130,7 +130,9 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
 
                 //TODO
             }
+            currentNode = currentNode->parentNode.get();
         }
+        while (currentNode != nullptr);
     }
 
     return { UIDBTreeResultCode::Success, currentNode };
