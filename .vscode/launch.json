@@ -22,7 +22,7 @@
                     "ignoreFailures": true
                 }
             ],
-            "preLaunchTask": "C/C++: g++-10 build all .cpp files",
+            "preLaunchTask": "g++ c++20 build",
             "miDebuggerPath": "/usr/bin/gdb"
         },
         //Same thing as above, but no preLaunchTask to compile the application first.
