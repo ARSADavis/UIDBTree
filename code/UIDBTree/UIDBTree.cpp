@@ -190,6 +190,7 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     UIDBNode* leftChildNode = convertMe->GetLeftChildNode();
     UIDBNode* rightChildNode = convertMe->GetRightChildNode();
 
+    //Add tree characters.
     for (std::wstring c: startingCharacters)
     {
         wss << c;
@@ -203,12 +204,13 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     else
     {
         //Right child.
-        wss << UIDBTreeRightChildMore << L" " << UIDBNode::ToWString(rightChildNode) << L"\n";
-        startingCharacters.push_back(leftChildNode == nullptr ? UIDBTreeAncestorNoMore : UIDBTreeAncestorNext);
+        wss << UIDBTreeRightChild << L" " << UIDBNode::ToWString(rightChildNode) << L"\n";
+        startingCharacters.push_back(UIDBTreeAncestorNext);
         treeNodeToStringRecursive(wss, startingCharacters, rightChildNode);
         startingCharacters.pop_back();
     }
 
+    //Add tree characters.
     for (std::wstring c: startingCharacters)
     {
         wss << c;
@@ -222,7 +224,7 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     else
     {
         //Left child.
-        wss << UIDBTreeLeftChildMore << L" " << UIDBNode::ToWString(leftChildNode) << L"\n";
+        wss << UIDBTreeLeftChild << L" " << UIDBNode::ToWString(leftChildNode) << L"\n";
         startingCharacters.push_back(UIDBTreeAncestorNoMore);
         treeNodeToStringRecursive(wss, startingCharacters, leftChildNode);
         startingCharacters.pop_back();
