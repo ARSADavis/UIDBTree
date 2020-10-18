@@ -1,6 +1,6 @@
 #include "UIDBNode.h"
 
-UIDBNode::UIDBNode(): subtreeBalance(0)
+UIDBNode::UIDBNode(): subtreeMaxDepthBalance(0)
 {
 
 }
@@ -8,7 +8,7 @@ UIDBNode::UIDBNode(): subtreeBalance(0)
 
 UIDBNode* UIDBNode::GetParentNode()
 {
-    return parentNode.get();
+    return parentNode;
 }
 UIDBNode* UIDBNode::GetLeftChildNode()
 {
@@ -47,8 +47,8 @@ std::wstring UIDBNode::ToWString(UIDBNode* convertMe)
     else
     {
         std::wstringstream wss;
-        wss << L"(" << (int)convertMe->subtreeBalance << ") { \"" << BVToWString(convertMe->key);
-        wss << L"\", \"" << BVVToWString(convertMe->values) << L"\" }";
+        wss << L"(" << (int)convertMe->subtreeMaxDepthBalance << ") " << BVToT<TreeKeyType>(convertMe->key);
+        wss << L": \"" << BVVToWString(convertMe->values) << L"\"";
         return wss.str();
     }
 }

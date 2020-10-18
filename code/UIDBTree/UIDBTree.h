@@ -25,10 +25,11 @@ class UIDBTree
         std::unique_ptr<UIDBNode> rootNode;
         bool duplicatesAllowed;
 
+        void propagateBalanceChange(const std::vector<UIDBNode*>& traversalHistory, UIDBNode* lowestNode,
+            char propagatingChange);
+
         static char compareKeys(ByteVector firstKey, ByteVector secondKey);
 
-        static void rebalanceFrom(UIDBNode* startNode);
-
-        static void treeNodeToStringRecursive(std::wstringstream& wss, std::vector<std::wstring> startingCharacters,
+        static void treeNodeToStringRecursive(std::wstringstream& wss, std::vector<std::wstring>& startingCharacters,
             UIDBNode* convertMe);
 };

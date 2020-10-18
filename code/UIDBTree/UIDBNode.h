@@ -22,10 +22,12 @@ class UIDBNode
         static std::wstring ToWString(UIDBNode* convertMe);
 
     private:
-        std::unique_ptr<UIDBNode> parentNode, leftChildNode, rightChildNode; //nextNode, previousNode
+        UIDBNode* parentNode;
+        std::unique_ptr<UIDBNode> leftChildNode, rightChildNode; //nextNode, previousNode
         //std::size_t childNodeCount;
-        //Note: Subtree balance does not concern itself with duplicate values, only nodes.
-        char subtreeBalance;
+        //The equivalent of right.maxDepth - left.maxDepth (if these properties were to be maintained). Note that we
+        //only care about the max.
+        char subtreeMaxDepthBalance;
         ByteVector key;
         //A vector of values, in order to be able to support duplicates.
         ByteVectorVector values;
