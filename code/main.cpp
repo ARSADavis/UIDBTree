@@ -39,9 +39,8 @@ int main()
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 20, 15 });
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 20, 24 });
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 76, 77, 78, 79, 80 });
-
-    //Broken.
     //std::vector<TreeKeyType> keys({ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 });
+    std::vector<TreeKeyType> keys({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
 
     for (TreeKeyType key: keys)
     {

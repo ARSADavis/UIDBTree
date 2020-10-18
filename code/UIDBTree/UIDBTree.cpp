@@ -455,6 +455,7 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 //Old primary node was root.
                 rootNode.release();
                 rootNode.reset(newPrimaryNode);
+                newPrimaryNode->parentNode = nullptr;
             }
             else if (primaryNode == primaryParentNode->rightChildNode.get())
             {
