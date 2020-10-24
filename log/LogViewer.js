@@ -72,7 +72,12 @@ let fullReload = function() {
 };
 
 window.onmessage = function(e) {
-    HTML.logContents.innerHTML += e.data;
+    let newOutputSpan;
+    for (let outputSegment of e.data) {
+        newOutputSpan = document.createElement('span');
+        newOutputSpan.innerHTML = outputSegment;
+        HTML.logContents.appendChild(newOutputSpan);
+    }
 };
 
 window.onload = function() {
