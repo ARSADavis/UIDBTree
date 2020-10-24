@@ -3,10 +3,10 @@ html {
     padding: 0;
 }
 
-body {
+body, iframe {
     margin: 0;
     padding: 0;
-    background-color: darkslateblue;
+    background-color: rgb(15, 20, 40);
     color: white;
     font-family: 'Courier New', Courier, monospace;
     font-size: 12px;
@@ -20,6 +20,33 @@ p {
     margin: 0;
 }
 
+input[type="file"] {
+    display: none;
+    /*background: rgb(50, 40, 60);*/
+    /*border-radius: 10px;*/
+}
+
+input[type="button"], #logFileBrowseButton {
+    background: rgb(20, 40, 80);
+    color: white;
+    border: 1px solid black;
+    border-radius: 6px;
+    padding: 6px 12px;
+    text-decoration: none;
+}
+
+input[type="button"]:active, #logFileBrowseButton:active {
+    background: rgb(15, 30, 60);
+}
+
 .pad {
     padding: 8px;
+}
+
+#refreshLogLabel {
+    color: darkslategray;
+}
+
+#logFileFrame {
+    display: none;
 }

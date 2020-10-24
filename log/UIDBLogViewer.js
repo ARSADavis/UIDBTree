@@ -1,57 +1,117 @@
-let loadedFile = function(fileContents) {
-    logFileContents.innerHTML = fileContents;
+const refreshTimeUpdateInterval = 10;
+const refreshInterval = 1000;
+
+window.refreshLogInterval = null;
+window.refreshLogTime = 0;
+
+let reset = function(options = {}) {
+    if (options.resetOffset) {
+        sessionStorage.setItem('offset', 0);
+    }
+    if (options.resetLogInterval) {
+        clearLogInterval();
+    }
+    if (options.resetCheckboxOff) {
+        HTML.autoRefreshCheckbox.checked = false;
+    } else if (options.resetCheckboxOn) {
+        HTML.autoRefreshCheckbox.checked = false;
+        HTML.autoRefreshCheckbox.click();
+    }
+    if (options.resetFile) {
+        HTML.logFileInput.value = '';
+    }
+    if (options.resetLogContents) {
+        HTML.logFileContents.innerHTML = '';
+    } else if (options.clearLogContents) {
+        HTML.logFileContents.innerHTML = 'Cleared!';
+    }
+    if (options.resetFrame) {
+        HTML.logFileFrame.src = '';
+    }
 };
 
-let refreshLogFunction = function() {
-    if (!refreshLogCheckbox.checked) {
-        return;
+let onRefresh = function() {
+    refreshLogTime -= refreshTimeUpdateInterval;
+    HTML.refreshLogLabel.innerHTML = ' (' + (Math.round(refreshLogTime) / 1000.0).toFixed(1) + 's)';
+    if (refreshLogTime <= 0) {
+        refreshLog();
     }
-    refreshLogTime = 1000;
-    if (logFileInput.files[0] != null) {
-        fileReader.readAsText(logFileInput.files[0]);
+};
+
+let reloadFrame = function() {
+    if (HTML.logFileInput.files[0] == null) {
+        HTML.logFileFrame.src = '';
+        HTML.logFileContents.innerHTML = '';
     } else {
-        logFileContents.innerHTML = 'No log file selected!';
-        clearInterval(refreshLogInterval);
+        //Get rid of 'C:\\fakepath\\'...
+        HTML.logFileFrame.src = HTML.logFileInput.value.substring(12);
     }
 };
 
-let refreshLogTimeFunction = function() {
-    refreshLogTime -= 100;
-    refreshLogLabel.innerHTML = 'Refresh Log (' + (Math.round(refreshLogTime) / 1000.0).toFixed(1) + ')';
+let refreshLog = function() {
+    refreshLogTime = refreshInterval;
+    reloadFrame();
 };
 
-window.updateLogRefresh = function() {
-    if (refreshLogCheckbox.checked) {
-        refreshLogFunction();
-        refreshLogInterval = setInterval(refreshLogFunction, 1000);
-        refreshLogTimeInterval = setInterval(refreshLogTimeFunction, 100);
-    } else {
-        clearInterval(refreshLogInterval);
-        clearInterval(refreshLogTimeInterval);
-        refreshLogLabel.innerHTML = 'Refresh Log';
-    }
+let clearLogInterval = function() {
+    clearInterval(refreshLogInterval);
+    refreshLogInterval = null;
+    HTML.refreshLogLabel.innerHTML = '';
+};
+
+let fullReload = function() {
+    reset({
+        resetOffset: true,
+        resetLogInterval: true,
+        resetCheckboxOn: true,
+        resetLogContents: true,
+        resetFrame: true
+    });
+    reloadFrame();
+};
+
+window.onmessage = function(e) {
+    HTML.logFileContents.innerHTML += e.data;
 };
 
 window.onload = function() {
-    window.clearLogButton = document.getElementById('clearLogButton');
-    window.logFileInput = document.getElementById('logFileInput');
-    window.logFileContents = document.getElementById('logFileContents');
-    window.refreshLogCheckbox = document.getElementById('refreshLogCheckbox');
-    window.refreshLogLabel = document.getElementById('refreshLogLabel');
-    window.refreshLogInterval = null;
-    window.refreshLogTime = 0;
-    window.refreshLogTimeInterval = null;
-    window.fileReader = new FileReader();
-    fileReader.onloadend = function() {
-        loadedFile(fileReader.result);
+    //Get the HTML elements.
+    window.HTML = document.body.getElementsByTagName('*');
+
+    HTML.logFileInput.onchange = fullReload;
+    HTML.fullReloadButton.onclick = fullReload;
+
+    HTML.autoRefreshCheckbox.onclick = function() {
+        if (HTML.autoRefreshCheckbox.checked) {
+            refreshLogTime = refreshTimeUpdateInterval;
+            onRefresh();
+            refreshLogInterval = setInterval(onRefresh, refreshTimeUpdateInterval);
+        } else {
+            clearLogInterval();
+        }
     };
 
-    clearLogButton.onclick = function() {
-        refreshLogCheckbox.checked = false;
-        logFileInput.value = '';
-        logFileContents.innerHTML = 'Cleared!';
-    };
+    HTML.resetConfigurationButton.onclick = reset.bind(this, {
+        resetOffset: true,
+        resetLogInterval: true,
+        resetCheckboxOff: true,
+        resetFile: true,
+        resetFrame: true
+    });
 
-    refreshLogCheckbox.onclick = updateLogRefresh;
-    updateLogRefresh();
+    HTML.clearLogButton.onclick = reset.bind(this, {
+        resetOffset: true,
+        resetLogInterval: true,
+        resetCheckboxOff: true,
+        clearLogContents: true
+    });
+
+    reset({
+        resetOffset: true,
+        resetLogInterval: true,
+        resetCheckboxOff: true,
+        resetFile: true,
+        resetLogContents: true,
+        resetFrame: true
+    });
 };

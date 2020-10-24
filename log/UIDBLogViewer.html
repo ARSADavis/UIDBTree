@@ -6,14 +6,22 @@
         <link rel="stylesheet" href="UIDBLogViewer.css"/>
     </head>
     <body>
-        <div class="pad">
-            <input id="clearLogButton" type="button" value="Clear"/>
-            <input id="refreshLogCheckbox" type="checkbox"><span id="refreshLogLabel"></span>
-            <input id="logFileInput" type="file"/>
+        <div class="pad" style="display: inline-block; margin-right: -4px;">
+            <a id="logFileBrowseButton" href="javascript:HTML.logFileInput.click();">Browse...</a>
+            <label id="logFileInputLabel">
+                <input id="logFileInput" type="file"/>
+            </label>
+            <input id="autoRefreshCheckbox" type="checkbox"><span>Auto-refresh</span><span id="refreshLogLabel"></span>
+            <input id="resetConfigurationButton" type="button" value="Reset Configuration"/>
+        </div>
+        <div class="pad" style="display: inline-block; border-left: 1px solid gray;">
+            <input id="clearLogButton" type="button" value="Clear Log"/>
+            <input id="fullReloadButton" type="button" value="Full Reload"/>
         </div>
         <hr/>
         <div class="pad">
             <div id="logFileContents"></div>
         </div>
+        <iframe id="logFileFrame"/>
     </body>
 </html>
