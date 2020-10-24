@@ -2,13 +2,14 @@
     <head>
         <meta charset="UTF-8"/>
         <title>UIDB Log Viewer</title>
-        <script src="UIDBLogViewer.js"></script>
-        <link rel="stylesheet" href="UIDBLogViewer.css"/>
+        <script src="LogViewer.js"></script>
+        <link rel="stylesheet" href="LogViewer.css"/>
     </head>
     <body>
         <div class="pad" style="display: inline-block; margin-right: -4px;">
             <a id="logFileBrowseButton" href="javascript:HTML.logFileInput.click();">Browse...</a>
-            <label id="logFileInputLabel">
+            <label>
+                <span id="logFileInputLabel"></span>
                 <input id="logFileInput" type="file"/>
             </label>
             <input id="autoRefreshCheckbox" type="checkbox"><span>Auto-refresh</span><span id="refreshLogLabel"></span>

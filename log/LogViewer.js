@@ -78,7 +78,11 @@ window.onload = function() {
     //Get the HTML elements.
     window.HTML = document.body.getElementsByTagName('*');
 
-    HTML.logFileInput.onchange = fullReload;
+    HTML.logFileInput.onchange = function() {
+        //Get rid of 'C:\\fakepath\\'...
+        HTML.logFileInputLabel.innerHTML = HTML.logFileInput.value.substring(12);
+        fullReload();
+    };
     HTML.fullReloadButton.onclick = fullReload;
 
     HTML.autoRefreshCheckbox.onclick = function() {
