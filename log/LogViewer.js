@@ -96,6 +96,7 @@ window.onload = function() {
         if (HTML.autoRefreshCheckbox.checked) {
             if (HTML.logFileInput.files[0] == null) {
                 HTML.logContents.innerHTML = 'Choose a log file first!';
+                HTML.autoRefreshCheckbox.checked = false;
                 return;
             }
             refreshLogTime = refreshTimeUpdateInterval;

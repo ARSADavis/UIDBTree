@@ -43,6 +43,12 @@ input[type="button"]:active, #logFileBrowseButton:active {
     padding: 8px;
 }
 
+#autoRefreshCheckbox {
+    position: relative;
+    margin: 0px 6px;
+    top: 3px;
+}
+
 #refreshLogLabel {
     color: darkslategray;
 }
