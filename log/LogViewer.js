@@ -19,11 +19,12 @@ let reset = function(options = {}) {
     }
     if (options.resetFile) {
         HTML.logFileInput.value = '';
+        HTML.logFileInputLabel.innerHTML = '';
     }
     if (options.resetLogContents) {
-        HTML.logFileContents.innerHTML = '';
+        HTML.logContents.innerHTML = '';
     } else if (options.clearLogContents) {
-        HTML.logFileContents.innerHTML = 'Cleared!';
+        HTML.logContents.innerHTML = 'Cleared!';
     }
     if (options.resetFrame) {
         HTML.logFileFrame.src = '';
@@ -41,7 +42,7 @@ let onRefresh = function() {
 let reloadFrame = function() {
     if (HTML.logFileInput.files[0] == null) {
         HTML.logFileFrame.src = '';
-        HTML.logFileContents.innerHTML = '';
+        HTML.logContents.innerHTML = '';
     } else {
         //Get rid of 'C:\\fakepath\\'...
         HTML.logFileFrame.src = HTML.logFileInput.value.substring(12);
@@ -71,7 +72,7 @@ let fullReload = function() {
 };
 
 window.onmessage = function(e) {
-    HTML.logFileContents.innerHTML += e.data;
+    HTML.logContents.innerHTML += e.data;
 };
 
 window.onload = function() {
@@ -83,10 +84,20 @@ window.onload = function() {
         HTML.logFileInputLabel.innerHTML = HTML.logFileInput.value.substring(12);
         fullReload();
     };
-    HTML.fullReloadButton.onclick = fullReload;
+    HTML.fullReloadButton.onclick = function() {
+        if (HTML.logFileInput.files[0] == null) {
+            HTML.logContents.innerHTML = 'Choose a log file first!';
+            return;
+        }
+        fullReload();
+    };
 
     HTML.autoRefreshCheckbox.onclick = function() {
         if (HTML.autoRefreshCheckbox.checked) {
+            if (HTML.logFileInput.files[0] == null) {
+                HTML.logContents.innerHTML = 'Choose a log file first!';
+                return;
+            }
             refreshLogTime = refreshTimeUpdateInterval;
             onRefresh();
             refreshLogInterval = setInterval(onRefresh, refreshTimeUpdateInterval);
