@@ -1,5 +1,6 @@
 #include <iostream>
 #include "UIDBTree/UIDBTree.h"
+#include "HTMLLogger/HTMLLogger.h"
 
 void PrintTreeStatus(std::unique_ptr<UIDBTree>& tree)
 {
@@ -19,12 +20,8 @@ void InsertData(std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector val
         UIDBTreeResultCodeMap.at(insertResult.first) << L" " << UIDBNode::ToWString(insertResult.second);
 }
 
-int main()
+void testTree()
 {
-    //UTF-8 wide character printing.
-    setlocale(LC_ALL, "en_US.UTF-8");
-    std::wcout << std::boolalpha;
-
     //Create a UIDBTree.
     std::unique_ptr<UIDBTree> tree(new UIDBTree());
     std::wcout << L"Created tree";
@@ -48,8 +45,23 @@ int main()
         PrintTreeStatus(tree);
         PrintTree(tree);
     }
+}
 
-    std::wcout << L"\n\nFinished.";
+int main()
+{
+    //UTF-8 wide character printing.
+    setlocale(LC_ALL, "en_US.UTF-8");
+    std::wcout << std::boolalpha;
+
+    HTMLLogger htmlLogger;
+    htmlLogger.OpenLogFile("log/log.html");
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
+    htmlLogger.LogWStringInsert(L"<p>Test</p>");
+
+    //testTree();
+
+    htmlLogger.CloseLogFile();
 
     std::wcout << L"\n\n";
     return 0;

@@ -20,6 +20,10 @@ p {
     margin: 0;
 }
 
+.pad {
+    padding: 8px;
+}
+
 input[type="file"] {
     display: none;
     /*background: rgb(50, 40, 60);*/
@@ -39,8 +43,11 @@ input[type="button"]:active, #logFileBrowseButton:active {
     background: rgb(15, 30, 60);
 }
 
-.pad {
-    padding: 8px;
+#logFileInputLabel {
+    display: inline-block;
+    max-width: 300px;
+    word-wrap: break-word;
+    vertical-align: middle;
 }
 
 #autoRefreshCheckbox {
