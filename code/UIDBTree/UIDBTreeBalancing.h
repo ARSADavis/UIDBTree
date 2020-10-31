@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Globals.h"
+#include "../Globals.h"
 
 
 //Use this to compute the parent balance when the child max depths are known.
