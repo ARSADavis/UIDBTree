@@ -24,11 +24,10 @@ static std::wstring StringToWString(std::string convertMe)
 
 static std::string TimeToString(time_t* convertMe)
 {
-    std::string almostThere = ctime(convertMe);
-    return almostThere.substr(0, almostThere.length() - 1);
+    return std::to_string(*convertMe);
 }
 
 static std::wstring TimeToWString(time_t* convertMe)
 {
-    return StringToWString(TimeToString(convertMe));
+    return std::to_wstring(*convertMe);
 }
