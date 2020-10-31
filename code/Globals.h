@@ -12,6 +12,7 @@
 #include <thread>
 #include <chrono>
 #include <ctime>
+#include <codecvt>
 
 #include "ByteGlobals.h"
 

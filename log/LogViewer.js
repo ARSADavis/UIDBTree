@@ -81,7 +81,7 @@ let onAutoRefresh = function() {
 };
 
 window.onmessage = function(e) {
-    if (e.data == 'reset') {
+    if (e.data == null) {
         reset({ resetLogContents: true });
         return;
     }

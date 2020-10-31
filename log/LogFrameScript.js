@@ -7,7 +7,7 @@ window.onload = function() {
     let offset;
     if (logStartTime != lastLogStartTime) {
         offset = null;
-        window.parent.postMessage('reset', '*');
+        window.parent.postMessage(null, '*');
     } else {
         offset = sessionStorage.getItem('offset');
     }

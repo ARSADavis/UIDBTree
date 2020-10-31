@@ -42,7 +42,7 @@ std::wstring UIDBNode::ToWString(UIDBNode* convertMe)
 {
     if (convertMe == nullptr)
     {
-        return L"<nullptr>";
+        return L"&lt;nullptr&gt;";
     }
     else
     {

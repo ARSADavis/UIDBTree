@@ -2,33 +2,37 @@
 #include "UIDBTree/UIDBTree.h"
 #include "HTMLLogger/HTMLLogger.h"
 
-void PrintTreeStatus(std::unique_ptr<UIDBTree>& tree)
+void PrintTreeStatus(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 {
-    std::wcout << L"\nTree empty: " << tree->IsEmpty() << L"\n";
-    std::wcout << L"Tree root node: " << UIDBNode::ToWString(tree->GetRootNode());
+    htmlLogger->LogTextLine();
+    htmlLogger->LogTextLine(L"Tree empty: " + std::to_wstring(tree->IsEmpty()));
+    htmlLogger->LogTextLine(L"Tree root node: " + UIDBNode::ToWString(tree->GetRootNode()));
 }
 
-void PrintTree(std::unique_ptr<UIDBTree>& tree)
+void PrintTree(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 {
-    std::wcout << L"\nTree contents:\n" << UIDBTree::ToWString(tree.get());
+    htmlLogger->LogTextLine();
+    htmlLogger->LogTextLine(L"Tree contents:");
+    htmlLogger->LogTextLine(L"<pre>" + UIDBTree::ToWString(tree.get()) + L"</pre>");
 }
 
-void InsertData(std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
+void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
 {
     std::pair<UIDBTreeResultCode, UIDBNode*> insertResult = tree->InsertNodeByKey(TToBV(key), value);
-    std::wcout << L"\nInserted { " << key << L": " << BVToWString(value) << L" } into tree: " <<
-        UIDBTreeResultCodeMap.at(insertResult.first) << L" " << UIDBNode::ToWString(insertResult.second);
+    htmlLogger->LogTextLine();
+    htmlLogger->LogTextLine(L"Inserted { " + std::to_wstring(key) + L": " + BVToWString(value) + L" } into tree: " +
+        UIDBTreeResultCodeMap.at(insertResult.first) + L" " + UIDBNode::ToWString(insertResult.second));
 }
 
-void testTree()
+void testTree(HTMLLogger* htmlLogger)
 {
     //Create a UIDBTree.
     std::unique_ptr<UIDBTree> tree(new UIDBTree());
-    std::wcout << L"Created tree";
+    htmlLogger->LogTextLine(L"Created tree");
 
-    PrintTreeStatus(tree);
-    PrintTree(tree);
-    std::wcout << L"\n";
+    PrintTreeStatus(htmlLogger, tree);
+    PrintTree(htmlLogger, tree);
+    htmlLogger->LogTextLine();
 
     //These all work.
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 80, 85 });
@@ -36,14 +40,14 @@ void testTree()
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 20, 15 });
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 20, 24 });
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 76, 77, 78, 79, 80 });
-    //std::vector<TreeKeyType> keys({ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 });
-    std::vector<TreeKeyType> keys({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
+    std::vector<TreeKeyType> keys({ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 });
+    //std::vector<TreeKeyType> keys({ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 });
 
     for (TreeKeyType key: keys)
     {
-        InsertData(tree, key, StringToBV("data"));
-        PrintTreeStatus(tree);
-        PrintTree(tree);
+        InsertData(htmlLogger, tree, key, StringToBV("data"));
+        PrintTreeStatus(htmlLogger, tree);
+        PrintTree(htmlLogger, tree);
     }
 }
 
@@ -56,10 +60,7 @@ int main()
     HTMLLogger htmlLogger;
     htmlLogger.OpenLogFile("log/log.html");
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(5000));
-    htmlLogger.LogWStringInsert(L"<p>Test</p>");
-
-    //testTree();
+    testTree(&htmlLogger);
 
     htmlLogger.CloseLogFile();
 

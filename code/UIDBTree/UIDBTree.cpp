@@ -133,14 +133,14 @@ std::wstring UIDBTree::ToWString(UIDBTree* convertMe)
 {
     if (convertMe == nullptr)
     {
-        return L"<nullptr>";
+        return L"&lt;nullptr&gt;";
     }
     else
     {
         UIDBNode* startingNode = convertMe->GetRootNode();
         if (startingNode == nullptr)
         {
-            return L"<nullptr>";
+            return L"&lt;nullptr&gt;";
         }
         std::wstringstream wss;
         wss << UIDBNode::ToWString(startingNode) << L"\n";
@@ -517,7 +517,7 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     if (rightChildNode == nullptr)
     {
         //No right child.
-        wss << UIDBTreeRightChild << L" <leaf>\n";
+        wss << UIDBTreeRightChild << L" &lt;leaf&gt;\n";
     }
     else
     {
@@ -537,7 +537,7 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     if (leftChildNode == nullptr)
     {
         //No left child.
-        wss << UIDBTreeLeftChild << L" <leaf>\n";
+        wss << UIDBTreeLeftChild << L" &lt;leaf&gt;\n";
     }
     else
     {

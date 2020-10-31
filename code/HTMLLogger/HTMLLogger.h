@@ -22,21 +22,27 @@ class HTMLLogger
             this->logFilePath = logFilePath;
 
             //Create and truncate (empty) the file for writing.
-            std::wcout << L"Opening " << std::wstring(logFilePath.begin(), logFilePath.end()) << L" for logging.\n\n";
+            std::wcout << L"Opening " << std::wstring(logFilePath.begin(), logFilePath.end()) << L" for logging.\n";
             logFile = new std::wfstream(logFilePath, std::ios::trunc | std::ios::out);
+            logFile->imbue(std::locale(std::locale(), new std::codecvt_utf8<wchar_t>()));
 
             //Log file setup.
             time_t logStartTime = time(nullptr);
-            *logFile << L"<script src=\"LogFrameScript.js\"></script>";
+            *logFile << L"<script src=\"LogFrameScript.js\"></script>\n";
             *logFile << L"<script>\nlogStartTime = " << std::to_wstring(logStartTime) << L";\n";
 
             //First output.
             LogWStringInsert(L"<p>Logging started (" + TimeToWString(&logStartTime) + L").</p><br/>");
         }
 
+        void LogTextLine(std::wstring logMe = L"")
+        {
+            LogWStringInsert(L"<p>" + logMe + L"</p>");
+        }
+
         void LogWStringOverwrite(std::wstring logMe)
         {
-            *logFile << L"output.push('" << logMe << L"');\n";
+            *logFile << L"output.push(`" << logMe << L"`);\n";
         }
 
         void LogWStringInsert(std::wstring logMe)
@@ -68,7 +74,7 @@ class HTMLLogger
             RestoreScriptEnd();
 
             //Close the file.
-            std::wcout << L"\n\nClosing logger file " << std::wstring(logFilePath.begin(), logFilePath.end()) << L".";
+            std::wcout << L"\nClosing logger file " << std::wstring(logFilePath.begin(), logFilePath.end()) << L".";
             logFile->close();
             delete logFile;
             logFile = nullptr;
