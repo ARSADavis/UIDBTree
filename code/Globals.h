@@ -13,6 +13,8 @@
 #include <chrono>
 #include <ctime>
 #include <codecvt>
+#include <exception>
+#include <functional>
 
 #include "ByteGlobals.h"
 

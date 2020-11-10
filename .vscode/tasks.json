@@ -26,6 +26,13 @@
             "group": {
                 "kind": "build",
                 "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "clear": true
             }
         },
         {
@@ -36,15 +43,26 @@
                 "kind": "test",
                 "isDefault": true
             },
-            "dependsOn": "g++ c++20 build"
+            "dependsOn": "g++ c++20 build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "clear": true
+            }
         },
         {
             "type": "shell",
             "label": "Run only",
             "command": "${workspaceFolder}/UIDBTree",
-            "group": {
-                "kind": "test",
-                "isDefault": false
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "clear": true
             }
         }
     ]

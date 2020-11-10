@@ -1,6 +1,7 @@
 #include <iostream>
 #include "UIDBTree/UIDBTree.h"
 #include "HTMLLogger/HTMLLogger.h"
+#include "ErrorGlobals.h"
 
 void PrintTreeStatus(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 {
@@ -49,12 +50,8 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     }
 }
 
-int main()
+int WrappedMain()
 {
-    //UTF-8 wide character printing.
-    setlocale(LC_ALL, "en_US.UTF-8");
-    std::wcout << std::boolalpha;
-
     HTMLLogger htmlLogger;
     htmlLogger.OpenLogFile("log/log.html");
 
@@ -62,6 +59,10 @@ int main()
 
     htmlLogger.CloseLogFile();
 
-    std::wcout << L"\n\n";
     return 0;
+}
+
+int main()
+{
+    return MainWithCatch(WrappedMain);
 }
