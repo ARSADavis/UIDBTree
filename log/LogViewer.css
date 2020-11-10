@@ -67,6 +67,14 @@ input[type="button"]:active, #logFileBrowseButton:active {
     color: darkslategray;
 }
 
+#logContents>span {
+    display: block;
+}
+
+#logContents>span>*:not(br):not(hr) {
+    padding: 8px;
+}
+
 #logFileFrame {
     display: none;
 }

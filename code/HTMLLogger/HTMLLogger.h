@@ -32,12 +32,23 @@ class HTMLLogger
             *logFile << L"<script>\nlogStartTime = " << std::to_wstring(logStartTime) << L";\n";
 
             //First output.
-            LogWStringInsert(L"<p>Logging started (" + TimeToWString(&logStartTime) + L").</p><br/>");
+            LogWStringInsert(L"<br/><span>Logging started (" + TimeToWString(&logStartTime) + L").</span>");
+            LogHR();
         }
 
-        void LogTextLine(std::wstring logMe = L"")
+        void LogHR()
         {
-            LogWStringInsert(L"<p>" + logMe + L"</p>");
+            LogWStringInsert(L"<br/><hr/>");
+        }
+
+        void LogNewLine()
+        {
+            LogWStringInsert(L"<br/>");
+        }
+
+        void LogTextLine(std::wstring logMe)
+        {
+            LogWStringInsert(L"<span>" + logMe + L"</span><br/>");
         }
 
         void LogWStringOverwrite(std::wstring logMe)
@@ -68,7 +79,7 @@ class HTMLLogger
 
             //Final output.
             time_t logEndTime = time(nullptr);
-            LogWStringOverwrite(L"<br/><p>Logging finished (" + TimeToWString(&logEndTime) + L").</p>");
+            LogWStringOverwrite(L"<span>Logging finished (" + TimeToWString(&logEndTime) + L").</span><br/>");
             *logFile << L"logEndTime = " << std::to_wstring(logEndTime) << L";\n";
             *logFile << L"loggingFinished = true;\n";
             RestoreScriptEnd();
