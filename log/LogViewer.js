@@ -89,7 +89,7 @@ window.onmessage = function(e) {
     for (let outputSegment of e.data) {
         newOutputSpan = document.createElement('span');
         newOutputSpan.innerHTML = outputSegment;
-        HTML.logContents.appendChild(newOutputSpan);
+        HTML.logContents.prepend(newOutputSpan);
     }
 };
 
