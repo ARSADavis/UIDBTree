@@ -10,11 +10,11 @@ void PrintTreeStatus(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
     htmlLogger->LogTextLine(L"Tree root node: " + UIDBNode::ToWString(tree->GetRootNode()));
 }
 
-void PrintTree(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
+void PrintTree(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreePrintingTypes treePrintingType)
 {
     htmlLogger->LogTextLine();
     htmlLogger->LogTextLine(L"Tree contents:");
-    htmlLogger->LogTextLine(L"<pre>" + UIDBTree::ToWString(tree.get()) + L"</pre>");
+    htmlLogger->LogTextLine(L"<pre>" + UIDBTree::ToWString(tree.get(), treePrintingType) + L"</pre>");
 }
 
 void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
@@ -31,7 +31,7 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     std::unique_ptr<UIDBTree> tree(new UIDBTree());
     htmlLogger->LogTextLine(L"New tree");
 
-    PrintTree(htmlLogger, tree);
+    PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
     htmlLogger->LogTextLine();
 
     //These all work.
@@ -46,7 +46,7 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     for (TreeKeyType key: keys)
     {
         InsertData(htmlLogger, tree, key, StringToBV("data"));
-        PrintTree(htmlLogger, tree);
+        PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
     }
 }
 

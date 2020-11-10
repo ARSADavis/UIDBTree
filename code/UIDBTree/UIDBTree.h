@@ -3,6 +3,12 @@
 #include "UIDBNode.h"
 #include "UIDBTreeResultCode.h"
 
+enum class TreePrintingTypes: unsigned char
+{
+    VerticalHTML,
+    HorizontalHTML
+};
+
 class UIDBTree
 {
     public:
@@ -18,7 +24,7 @@ class UIDBTree
         //std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> FindNodesByKey();
         //UIDBTreeResultCode DeleteNodeByKey();
 
-        static std::wstring ToWString(UIDBTree* convertMe);
+        static std::wstring ToWString(UIDBTree* convertMe, TreePrintingTypes treePrintingType);
 
     private:
         std::size_t treeNodeCount;
@@ -30,6 +36,8 @@ class UIDBTree
 
         static char compareKeys(ByteVector firstKey, ByteVector secondKey);
 
-        static void treeNodeToStringRecursive(std::wstringstream& wss, std::vector<std::wstring>& startingCharacters,
+        static void treeNodeToWStringVRecursive(std::wstringstream& wss, std::vector<std::wstring>& startingCharacters,
+            UIDBNode* convertMe);
+        static void treeNodeToWStringHRecursive(std::wstringstream& wss, std::vector<std::wstring>& startingCharacters,
             UIDBNode* convertMe);
 };

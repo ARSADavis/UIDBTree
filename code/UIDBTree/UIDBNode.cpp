@@ -38,11 +38,18 @@ const ByteVectorVector UIDBNode::GetValues()
 }
 
 
-std::wstring UIDBNode::ToWString(UIDBNode* convertMe)
+std::wstring UIDBNode::ToWString(UIDBNode* convertMe, bool compact, bool includeValues)
 {
     if (convertMe == nullptr)
     {
-        return L"<span class=\"leaf\">&lt;nullptr&gt;</span>";
+        if (compact)
+        {
+            return L"<span class=\"leaf\">&lt;L&gt;</span>";
+        }
+        else
+        {
+            return L"<span class=\"leaf\">&lt;leaf&gt;</span>";
+        }
     }
     else
     {
@@ -82,7 +89,10 @@ std::wstring UIDBNode::ToWString(UIDBNode* convertMe)
             }
             wss << L"</span>";
         }
-        wss << L": <span class=\"val\">\"" << BVVToWString(convertMe->values) << L"\"</span>";
+        if (includeValues)
+        {
+            wss << L": <span class=\"val\">\"" << BVVToWString(convertMe->values) << L"\"</span>";
+        }
         return wss.str();
     }
 }

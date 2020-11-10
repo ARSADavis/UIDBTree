@@ -19,7 +19,7 @@ class UIDBNode
         const ByteVector GetKey();
         const ByteVectorVector GetValues();
 
-        static std::wstring ToWString(UIDBNode* convertMe);
+        static std::wstring ToWString(UIDBNode* convertMe, bool compact = false, bool includeValues = true);
 
     private:
         UIDBNode* parentNode;
