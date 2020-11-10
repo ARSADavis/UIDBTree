@@ -42,7 +42,7 @@ class HTMLLogger
 
         void LogWStringOverwrite(std::wstring logMe)
         {
-            *logFile << L"output.push(`" << logMe << L"`);\n";
+            *logFile << L"output.push('" << logMe << L"');\n";
         }
 
         void LogWStringInsert(std::wstring logMe)

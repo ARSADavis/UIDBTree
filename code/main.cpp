@@ -20,17 +20,16 @@ void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKey
 {
     std::pair<UIDBTreeResultCode, UIDBNode*> insertResult = tree->InsertNodeByKey(TToBV(key), value);
     htmlLogger->LogTextLine();
-    htmlLogger->LogTextLine(L"Inserted { " + std::to_wstring(key) + L": " + BVToWString(value) + L" } into tree: " +
-        UIDBTreeResultCodeMap.at(insertResult.first) + L" " + UIDBNode::ToWString(insertResult.second));
+    htmlLogger->LogTextLine(L"Inserted { " + UIDBNode::ToWString(insertResult.second) + L" } into tree: " +
+        UIDBTreeResultCodeMap.at(insertResult.first));
 }
 
-void testTree(HTMLLogger* htmlLogger)
+void testTreeInserts(HTMLLogger* htmlLogger)
 {
     //Create a UIDBTree.
     std::unique_ptr<UIDBTree> tree(new UIDBTree());
-    htmlLogger->LogTextLine(L"Created tree");
+    htmlLogger->LogTextLine(L"New tree");
 
-    PrintTreeStatus(htmlLogger, tree);
     PrintTree(htmlLogger, tree);
     htmlLogger->LogTextLine();
 
@@ -46,7 +45,6 @@ void testTree(HTMLLogger* htmlLogger)
     for (TreeKeyType key: keys)
     {
         InsertData(htmlLogger, tree, key, StringToBV("data"));
-        PrintTreeStatus(htmlLogger, tree);
         PrintTree(htmlLogger, tree);
     }
 }
@@ -60,7 +58,7 @@ int main()
     HTMLLogger htmlLogger;
     htmlLogger.OpenLogFile("log/log.html");
 
-    testTree(&htmlLogger);
+    testTreeInserts(&htmlLogger);
 
     htmlLogger.CloseLogFile();
 

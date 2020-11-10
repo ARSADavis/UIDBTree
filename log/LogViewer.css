@@ -70,3 +70,36 @@ input[type="button"]:active, #logFileBrowseButton:active {
 #logFileFrame {
     display: none;
 }
+
+/* Formatting log output. */
+
+/* Vertical tree lines. */
+.vtl {
+    color: lightskyblue;
+}
+
+/* Good balance arrow. */
+.gba {
+    font-weight: bold;
+    color: green;
+}
+
+/* Bad balance arrow. */
+.bba {
+    font-weight: bold;
+    color: red;
+}
+
+.key {
+    font-weight: bold;
+    color: white;
+}
+
+.val {
+    color: darkslateblue;
+}
+
+.leaf {
+    font-style: italic;
+    color: gray;
+}

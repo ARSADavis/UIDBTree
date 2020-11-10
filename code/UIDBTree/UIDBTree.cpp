@@ -143,7 +143,7 @@ std::wstring UIDBTree::ToWString(UIDBTree* convertMe)
             return L"&lt;nullptr&gt;";
         }
         std::wstringstream wss;
-        wss << UIDBNode::ToWString(startingNode) << L"\n";
+        wss << UIDBNode::ToWString(startingNode) << L"<br\\>";
         std::vector<std::wstring> startingCharacters;
         UIDBTree::treeNodeToStringRecursive(wss, startingCharacters, startingNode);
         return wss.str();
@@ -499,7 +499,7 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
 {
     static char recursionCount = 0;
     ++recursionCount;
-    if (recursionCount > 64)
+    if (recursionCount > 65)
     {
         //Clearly in an infinite recursion situation here!!!
         throw "Error printing tree: infinite recursion!";
@@ -509,6 +509,7 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     UIDBNode* rightChildNode = convertMe->GetRightChildNode();
 
     //Add tree characters.
+    wss << L"<span class=\"vtl\">";
     for (std::wstring c: startingCharacters)
     {
         wss << c;
@@ -517,18 +518,19 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     if (rightChildNode == nullptr)
     {
         //No right child.
-        wss << UIDBTreeRightChild << L" &lt;leaf&gt;\n";
+        wss << UIDBTreeRightChild << L"</span> <span class=\"leaf\">&lt;leaf&gt;</span><br\\>";
     }
     else
     {
         //Right child.
-        wss << UIDBTreeRightChild << L" " << UIDBNode::ToWString(rightChildNode) << L"\n";
+        wss << UIDBTreeRightChild << L"</span> " << UIDBNode::ToWString(rightChildNode) << L"<br\\>";
         startingCharacters.push_back(UIDBTreeAncestorNext);
         treeNodeToStringRecursive(wss, startingCharacters, rightChildNode);
         startingCharacters.pop_back();
     }
 
     //Add tree characters.
+    wss << L"<span class=\"vtl\">";
     for (std::wstring c: startingCharacters)
     {
         wss << c;
@@ -537,12 +539,12 @@ void UIDBTree::treeNodeToStringRecursive(std::wstringstream& wss, std::vector<st
     if (leftChildNode == nullptr)
     {
         //No left child.
-        wss << UIDBTreeLeftChild << L" &lt;leaf&gt;\n";
+        wss << UIDBTreeLeftChild << L"</span> <span class=\"leaf\">&lt;leaf&gt;</span><br\\>";
     }
     else
     {
         //Left child.
-        wss << UIDBTreeLeftChild << L" " << UIDBNode::ToWString(leftChildNode) << L"\n";
+        wss << UIDBTreeLeftChild << L"</span> " << UIDBNode::ToWString(leftChildNode) << L"<br\\>";
         startingCharacters.push_back(UIDBTreeAncestorNoMore);
         treeNodeToStringRecursive(wss, startingCharacters, leftChildNode);
         startingCharacters.pop_back();
