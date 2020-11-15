@@ -3,12 +3,6 @@
 #include "UIDBNode.h"
 #include "UIDBTreeResultCode.h"
 
-enum class TreePrintingTypes: unsigned char
-{
-    VerticalHTML,
-    HorizontalHTML
-};
-
 class UIDBTree
 {
     public:
@@ -17,6 +11,7 @@ class UIDBTree
 
         bool IsEmpty();
         UIDBNode* GetRootNode();
+        unsigned char GetMaxDepth();
 
         //UIDBNode* GetLowestNodeByKey();
         //UIDBNode* GetHighestNodeByKey();
@@ -38,6 +33,6 @@ class UIDBTree
 
         static void treeNodeToWStringVRecursive(std::wstringstream& wss, std::vector<std::wstring>& startingCharacters,
             UIDBNode* convertMe);
-        static void treeNodeToWStringHRecursive(std::wstringstream& wss, std::vector<std::wstring>& startingCharacters,
-            UIDBNode* convertMe);
+        static void treeNodeToWStringHRecursive(std::vector<std::unique_ptr<std::wstringstream>>& wssLevels,
+            unsigned char treeMaxDepth, unsigned char currentLevel, bool isFirstOnLevel, UIDBNode* convertMe);
 };

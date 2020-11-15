@@ -2,6 +2,12 @@
 
 #include "../Globals.h"
 
+enum class TreePrintingTypes: unsigned char
+{
+    VerticalHTML,
+    HorizontalHTML
+};
+
 class UIDBNode;
 class UIDBNode
 {
@@ -19,7 +25,8 @@ class UIDBNode
         const ByteVector GetKey();
         const ByteVectorVector GetValues();
 
-        static std::wstring ToWString(UIDBNode* convertMe, bool compact = false, bool includeValues = true);
+        static std::wstring ToWString(UIDBNode* convertMe,
+            TreePrintingTypes treePrintingType = TreePrintingTypes::VerticalHTML);
 
     private:
         UIDBNode* parentNode;

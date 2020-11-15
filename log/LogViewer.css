@@ -86,6 +86,11 @@ input[type="button"]:active, #logFileBrowseButton:active {
     color: lightskyblue;
 }
 
+/* Horizontal tree lines. */
+.htl {
+    color: lightskyblue;
+}
+
 /* Good balance arrow. */
 .gba {
     font-weight: bold;

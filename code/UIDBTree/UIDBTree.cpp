@@ -21,6 +21,24 @@ UIDBNode* UIDBTree::GetRootNode()
 {
     return rootNode.get();
 }
+unsigned char UIDBTree::GetMaxDepth()
+{
+    unsigned char maxDepth = 0;
+    UIDBNode* currentNode = rootNode.get();
+    while (currentNode != nullptr)
+    {
+        ++maxDepth;
+        if (currentNode->subtreeMaxDepthBalance <= 0)
+        {
+            currentNode = currentNode->leftChildNode.get();
+        }
+        else
+        {
+            currentNode = currentNode->rightChildNode.get();
+        }
+    }
+    return maxDepth;
+}
 
 //UIDBNode* UIDBTree::GetLowestNodeByKey()
 //{
@@ -142,23 +160,38 @@ std::wstring UIDBTree::ToWString(UIDBTree* convertMe, TreePrintingTypes treePrin
     {
         std::wstringstream wss;
         UIDBNode* startingNode = convertMe->GetRootNode();
-        wss << UIDBNode::ToWString(startingNode,
-            treePrintingType == TreePrintingTypes::HorizontalHTML,
-            treePrintingType == TreePrintingTypes::VerticalHTML);
         if (startingNode == nullptr)
         {
+            wss << UIDBNode::ToWString(startingNode, treePrintingType);
             return wss.str();
         }
-        wss << L"<br/>";
-        std::vector<std::wstring> startingCharacters;
         switch (treePrintingType)
         {
             case TreePrintingTypes::VerticalHTML:
+            {
+                std::vector<std::wstring> startingCharacters;
+                wss << UIDBNode::ToWString(startingNode, treePrintingType) << L"<br/>";
                 UIDBTree::treeNodeToWStringVRecursive(wss, startingCharacters, startingNode);
                 break;
+            }
             case TreePrintingTypes::HorizontalHTML:
-                UIDBTree::treeNodeToWStringHRecursive(wss, startingCharacters, startingNode);
+            {
+                unsigned char treeMaxDepth = convertMe->GetMaxDepth();
+                //Construct a bunch of wstringstreams, two for each level of the tree + one for the deepest leaves.
+                std::vector<std::unique_ptr<std::wstringstream>> wssLevels(treeMaxDepth * 2 + 1);
+                for (std::unique_ptr<std::wstringstream>& currentWSS: wssLevels)
+                {
+                    currentWSS.reset(new std::wstringstream());
+                }
+                //Populate the wstringstreams with the appropriate contents.
+                UIDBTree::treeNodeToWStringHRecursive(wssLevels, treeMaxDepth, 0, true, startingNode);
+                //Output the results.
+                for (std::unique_ptr<std::wstringstream>& currentWSS: wssLevels)
+                {
+                    wss << currentWSS->str() << L"<br/>";
+                }
                 break;
+            }
         }
         return wss.str();
     }
@@ -529,7 +562,8 @@ void UIDBTree::treeNodeToWStringVRecursive(std::wstringstream& wss, std::vector<
         wss << c;
     }
     //Convert right child, if any.
-    wss << UIDBVTreeRightChild << L"</span> " << UIDBNode::ToWString(rightChildNode, false, true) << L"<br/>";
+    wss << UIDBVTreeRightChild << L"</span> " <<
+        UIDBNode::ToWString(rightChildNode, TreePrintingTypes::VerticalHTML) << L"<br/>";
     if (rightChildNode != nullptr)
     {
         //Right child.
@@ -545,7 +579,8 @@ void UIDBTree::treeNodeToWStringVRecursive(std::wstringstream& wss, std::vector<
         wss << c;
     }
     //Convert left child, if any.
-    wss << UIDBVTreeLeftChild << L"</span> " << UIDBNode::ToWString(leftChildNode, false, true) << L"<br/>";
+    wss << UIDBVTreeLeftChild << L"</span> " <<
+        UIDBNode::ToWString(leftChildNode, TreePrintingTypes::VerticalHTML) << L"<br/>";
     if (leftChildNode != nullptr)
     {
         //Left child.
@@ -557,51 +592,60 @@ void UIDBTree::treeNodeToWStringVRecursive(std::wstringstream& wss, std::vector<
     --recursionCount;
 }
 
-void UIDBTree::treeNodeToWStringHRecursive(std::wstringstream& wss, std::vector<std::wstring>& startingCharacters,
-    UIDBNode* convertMe)
+//Goal is something like this:
+//                       80
+//           ┌───────────┴───────────┐
+//           40                      60
+//     ┌─────┴─────┐           ┌─────┴─────┐
+//     2          <L>         <L>         <L>
+//  ┌──┴──┐     ┌──┴──┐
+// <L>   <L>   <L>   <L>
+void UIDBTree::treeNodeToWStringHRecursive(std::vector<std::unique_ptr<std::wstringstream>>& wssLevels,
+    unsigned char treeMaxDepth, unsigned char currentLevel, bool isFirstOnLevel, UIDBNode* convertMe)
 {
-    static char recursionCount = 0;
-    ++recursionCount;
-    if (recursionCount > 65)
+    //Append the current node to the node wstringstream for the current level.
+
+    //First, the left spacing, if any.
+    static const size_t charsPerNodeKey = 5;
+    static const size_t charsPerNotch = charsPerNodeKey + 1;
+    static const size_t leftOffset = charsPerNotch / 2;
+    unsigned char levelsFromBottom = treeMaxDepth - currentLevel;
+    if (isFirstOnLevel)
     {
-        //Clearly in an infinite recursion situation here!!!
-        throw "Error printing tree: infinite recursion!";
+        if (levelsFromBottom > 0)
+        {
+            *wssLevels[currentLevel * 2] <<
+                std::wstring((size_t)pow(2.0, (float)levelsFromBottom - 1.0) * charsPerNotch - leftOffset, L' ');
+        }
+    }
+    else
+    {
+        if (levelsFromBottom == 0)
+        {
+            *wssLevels[currentLevel * 2] << L' ';
+        }
+        else
+        {
+            *wssLevels[currentLevel * 2] << std::wstring(2 * (size_t)pow(3.0, (float)levelsFromBottom) + 1, L' ');
+        }
     }
 
+    //Then, the node key itself.
+    *wssLevels[currentLevel * 2] << UIDBNode::ToWString(convertMe, TreePrintingTypes::HorizontalHTML);
+
+    //If the node is just a leaf, stop here.
+    if (convertMe == nullptr)
+    {
+        return;
+    }
     UIDBNode* leftChildNode = convertMe->GetLeftChildNode();
     UIDBNode* rightChildNode = convertMe->GetRightChildNode();
 
-    //Add tree characters.
-    wss << L"<span class=\"vtl\">";
-    for (std::wstring c: startingCharacters)
-    {
-        wss << c;
-    }
-    //Convert right child, if any.
-    wss << UIDBVTreeRightChild << L"</span> " << UIDBNode::ToWString(rightChildNode, true, false) << L"<br/>";
-    if (rightChildNode != nullptr)
-    {
-        //Right child.
-        startingCharacters.push_back(UIDBVTreeAncestorNext);
-        treeNodeToWStringHRecursive(wss, startingCharacters, rightChildNode);
-        startingCharacters.pop_back();
-    }
+    //TODO: Next, construct the tree characters for the current level (just below the node key) based upon whether the
+    //immediate children are leaves.
+    //*wssLevels[currentLevel * 2 + 1] << ;
 
-    //Add tree characters.
-    wss << L"<span class=\"vtl\">";
-    for (std::wstring c: startingCharacters)
-    {
-        wss << c;
-    }
-    //Convert left child, if any.
-    wss << UIDBVTreeLeftChild << L"</span> " << UIDBNode::ToWString(leftChildNode, true, false) << L"<br/>";
-    if (leftChildNode != nullptr)
-    {
-        //Left child.
-        startingCharacters.push_back(UIDBVTreeAncestorNoMore);
-        treeNodeToWStringHRecursive(wss, startingCharacters, leftChildNode);
-        startingCharacters.pop_back();
-    }
-
-    --recursionCount;
+    //Finally, recurse through all descendants and do the same, depth-first, left child first.
+    treeNodeToWStringHRecursive(wssLevels, treeMaxDepth, currentLevel + 1, isFirstOnLevel, leftChildNode);
+    treeNodeToWStringHRecursive(wssLevels, treeMaxDepth, currentLevel + 1, false, rightChildNode);
 }
