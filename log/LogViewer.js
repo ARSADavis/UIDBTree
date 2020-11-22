@@ -119,6 +119,13 @@ window.onload = function() {
         resetFrame: true
     });
 
+    scrollToTopButton.onclick = function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    scrollToBottomButton.onclick = function() {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    };
+
     HTML.clearLogButton.onclick = reset.bind(this, {
         resetOffset: true,
         resetCheckboxOff: true,
