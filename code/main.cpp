@@ -52,8 +52,6 @@ int WrappedMain()
 
     testTreeInserts(&htmlLogger);
 
-    htmlLogger.CloseLogFile();
-
     return 0;
 }
 

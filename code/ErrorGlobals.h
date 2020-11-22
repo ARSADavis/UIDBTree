@@ -132,13 +132,13 @@ static int MainWithCatch(std::function<int()> mainWithoutCatch)
     SetupSignalHandlers();
     std::set_unexpected([]()
     {
-        std::wcerr << L"unexpected() called!\n\n";
+        std::wcerr << L"\n\nunexpected() called!\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     });
     std::set_terminate([]()
     {
-        std::wcerr << L"terminate() called!\n\n";
+        std::wcerr << L"\n\nterminate() called!\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     });
@@ -166,37 +166,37 @@ static int MainWithCatch(std::function<int()> mainWithoutCatch)
     }
     catch (std::exception const& ex)
     {
-        std::wcerr << L"Exception (std::exception) in MainWithCatch(): " << StringToWString(ex.what()) << L"\n\n";
+        std::wcerr << L"\n\nException (std::exception) in MainWithCatch(): " << StringToWString(ex.what()) << L"\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     }
     catch (std::wstring const& wstr)
     {
-        std::wcerr << L"Exception (std::wstring) in MainWithCatch(): " << wstr << L"\n\n";
+        std::wcerr << L"\n\nException (std::wstring) in MainWithCatch(): " << wstr << L"\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     }
     catch (std::string const& str)
     {
-        std::wcerr << L"Exception (std::string) in MainWithCatch(): " << StringToWString(str) << L"\n\n";
+        std::wcerr << L"\n\nException (std::string) in MainWithCatch(): " << StringToWString(str) << L"\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     }
     catch (const wchar_t* wstr)
     {
-        std::wcerr << L"Exception (const wchar_t*) in MainWithCatch(): " << wstr << L"\n\n";
+        std::wcerr << L"\n\nException (const wchar_t*) in MainWithCatch(): " << wstr << L"\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     }
     catch (const char* str)
     {
-        std::wcerr << L"Exception (const char*) in MainWithCatch(): " << StringToWString(str) << L"\n\n";
+        std::wcerr << L"\n\nException (const char*) in MainWithCatch(): " << StringToWString(str) << L"\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     }
     catch (...)
     {
-        std::wcerr << L"Exception (...) in MainWithCatch()!\n\n";
+        std::wcerr << L"\n\nException (...) in MainWithCatch()!\n\n";
         PrintBacktrace();
         exit(EXIT_FAILURE);
     }

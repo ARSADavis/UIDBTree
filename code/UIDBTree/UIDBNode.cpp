@@ -56,57 +56,64 @@ std::wstring UIDBNode::ToWString(UIDBNode* convertMe, TreePrintingTypes treePrin
     }
     else
     {
-        if (convertMe->subtreeMaxDepthBalance < 0)
+        switch (treePrintingType)
         {
-            if (convertMe->subtreeMaxDepthBalance == -1)
-            {
-                wss << L"<span class=\"gba\">";
-            }
-            else
-            {
-                wss << L"<span class=\"bba\">";
-            }
-            for (char arrowCount = 0; arrowCount > convertMe->subtreeMaxDepthBalance; --arrowCount)
-            {
-                wss << L"&lt;";
-            }
-            wss << L"</span>";
-            wss << L" ";
-            wss << L"<span class=\"key\">";
-            wss << PadTheRight(std::to_wstring(BVToT<TreeKeyType>(convertMe->key)),
-                L' ', 5 - 1 + convertMe->subtreeMaxDepthBalance);
-            wss << L"</span>";
-        }
-        else if (convertMe->subtreeMaxDepthBalance > 0)
-        {
-            wss << L"<span class=\"key\">";
-            wss << PadTheLeft(std::to_wstring(BVToT<TreeKeyType>(convertMe->key)),
-                L' ', 5 - 1 - convertMe->subtreeMaxDepthBalance);
-            wss << L"</span>";
-            wss << L" ";
-            if (convertMe->subtreeMaxDepthBalance == 1)
-            {
-                wss << L"<span class=\"gba\">";
-            }
-            else
-            {
-                wss << L"<span class=\"bba\">";
-            }
-            for (char arrowCount = 0; arrowCount < convertMe->subtreeMaxDepthBalance; ++arrowCount)
-            {
-                wss << L"&gt;";
-            }
-            wss << L"</span>";
-        }
-        else
-        {
-            wss << L"<span class=\"key\">";
-            wss << PadCentered(std::to_wstring(BVToT<TreeKeyType>(convertMe->key)), L' ', 5);
-            wss << L"</span>";
-        }
-        if (treePrintingType == TreePrintingTypes::VerticalHTML)
-        {
-            wss << L": <span class=\"val\">\"" << BVVToWString(convertMe->values) << L"\"</span>";
+            case TreePrintingTypes::HorizontalHTML:
+                if (convertMe->subtreeMaxDepthBalance < 0)
+                {
+                    if (convertMe->subtreeMaxDepthBalance == -1)
+                    {
+                        wss << L"<span class=\"gba\">";
+                    }
+                    else
+                    {
+                        wss << L"<span class=\"bba\">";
+                    }
+                    for (char arrowCount = 0; arrowCount > convertMe->subtreeMaxDepthBalance; --arrowCount)
+                    {
+                        wss << L"&lt;";
+                    }
+                    wss << L"</span>";
+                    wss << L" ";
+                    wss << L"<span class=\"key\">";
+                    wss << PadTheRight(std::to_wstring(BVToT<TreeKeyType>(convertMe->key)),
+                        L' ', 5 - 1 + convertMe->subtreeMaxDepthBalance);
+                    wss << L"</span>";
+                }
+                else if (convertMe->subtreeMaxDepthBalance > 0)
+                {
+                    wss << L"<span class=\"key\">";
+                    wss << PadTheLeft(std::to_wstring(BVToT<TreeKeyType>(convertMe->key)),
+                        L' ', 5 - 1 - convertMe->subtreeMaxDepthBalance);
+                    wss << L"</span>";
+                    wss << L" ";
+                    if (convertMe->subtreeMaxDepthBalance == 1)
+                    {
+                        wss << L"<span class=\"gba\">";
+                    }
+                    else
+                    {
+                        wss << L"<span class=\"bba\">";
+                    }
+                    for (char arrowCount = 0; arrowCount < convertMe->subtreeMaxDepthBalance; ++arrowCount)
+                    {
+                        wss << L"&gt;";
+                    }
+                    wss << L"</span>";
+                }
+                else
+                {
+                    wss << L"<span class=\"key\">";
+                    wss << PadCentered(std::to_wstring(BVToT<TreeKeyType>(convertMe->key)), L' ', 5);
+                    wss << L"</span>";
+                }
+                break;
+            case TreePrintingTypes::VerticalHTML:
+                wss << L"<span class=\"key\">";
+                wss << std::to_wstring(BVToT<TreeKeyType>(convertMe->key));
+                wss << L"</span>";
+                wss << L": <span class=\"val\">\"" << BVVToWString(convertMe->values) << L"\"</span>";
+                break;
         }
     }
     return wss.str();
