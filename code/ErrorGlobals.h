@@ -6,30 +6,54 @@
 #include <stdio.h>
 #include <string.h>
 #include <execinfo.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/prctl.h>
 
-static bool AlreadyBacktracing = false;
+//static bool AlreadyBacktracing = false;
+//static void PrintBacktrace()
+//{
+//    if (AlreadyBacktracing)
+//    {
+//        std::wcerr << L"\nWARNING: Recursive backtrace detected!\n";
+//        return;
+//    }
+//    AlreadyBacktracing = true;
+//    void* backtraceBuffer[100];
+//    int addressCount = backtrace(backtraceBuffer, 100);
+//    char** backtraceStrings = backtrace_symbols(backtraceBuffer, addressCount);
+//    std::wcerr << L"Backtrace (" << addressCount << L"):\n";
+//    for (int backtraceIndex = 0; backtraceIndex < addressCount; ++backtraceIndex)
+//    {
+//        std::wcerr << L"\t" << backtraceIndex << L": " << StringToWString(backtraceStrings[backtraceIndex]) << L"\n";
+//    }
+//    delete backtraceStrings;
+
+//    //For testing recursive backtrace.
+//    //PrintBacktrace();
+
+//    AlreadyBacktracing = false;
+//}
+
+//https://stackoverflow.com/a/4732119/1599699
 static void PrintBacktrace()
 {
-    if (AlreadyBacktracing)
+    char pidBuffer[30];
+    sprintf(pidBuffer, "%d", getpid());
+    char nameBuffer[512];
+    nameBuffer[readlink("/proc/self/exe", nameBuffer, 511)] = 0;
+    prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY, 0, 0, 0);
+    int childPid = fork();
+    if (!childPid)
     {
-        std::wcerr << L"\nWARNING: Recursive backtrace detected!\n";
-        return;
+        dup2(2, 1);
+        execl("/usr/bin/gdb", "gdb", "--batch", "-n", "-ex", "thread", "-ex", "bt", nameBuffer, pidBuffer, nullptr);
+        abort();
     }
-    AlreadyBacktracing = true;
-    void* backtraceBuffer[100];
-    int addressCount = backtrace(backtraceBuffer, 100);
-    char** backtraceStrings = backtrace_symbols(backtraceBuffer, addressCount);
-    std::wcerr << L"Backtrace (" << addressCount << L"):\n";
-    for (int backtraceIndex = 0; backtraceIndex < addressCount; ++backtraceIndex)
+    else
     {
-        std::wcerr << L"\t" << backtraceIndex << L": " << StringToWString(backtraceStrings[backtraceIndex]) << L"\n";
+        waitpid(childPid, nullptr, 0);
     }
-    delete backtraceStrings;
-
-    //For testing recursive backtrace.
-    //PrintBacktrace();
-
-    AlreadyBacktracing = false;
 }
 
 static bool AlreadyHandlingSignal = false;
