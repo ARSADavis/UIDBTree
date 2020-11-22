@@ -1,8 +1,9 @@
 #include "UIDBNode.h"
 
-UIDBNode::UIDBNode(): subtreeMaxDepthBalance(0)
+UIDBNode::UIDBNode()
 {
-
+    subtreeMaxDepthBalance = 0;
+    parentNode = nullptr;
 }
 
 

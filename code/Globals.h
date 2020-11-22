@@ -28,17 +28,18 @@ static std::wstring StringToWString(std::string const& convertMe)
 
 static std::string TimeToString(time_t* convertMe)
 {
-    return std::to_string(*convertMe);
+    std::string almostThere = ctime(convertMe);
+    return almostThere.substr(0, almostThere.length() - 1);
 }
 
 static std::wstring TimeToWString(time_t* convertMe)
 {
-    return std::to_wstring(*convertMe);
+    return StringToWString(TimeToString(convertMe));
 }
 
-static std::wstring PadTheLeft(std::wstring const& padMe, wchar_t const& withMe, std::intptr_t desiredLength)
+static std::wstring PadTheLeft(std::wstring const& padMe, wchar_t const& withMe, intptr_t desiredLength)
 {
-    std::intptr_t lengthDifference = desiredLength - padMe.length();
+    intptr_t lengthDifference = desiredLength - padMe.length();
     if (lengthDifference > 0)
     {
         return std::wstring(lengthDifference, withMe) + padMe;
@@ -49,9 +50,9 @@ static std::wstring PadTheLeft(std::wstring const& padMe, wchar_t const& withMe,
     }
 }
 
-static std::wstring PadTheRight(std::wstring const& padMe, wchar_t const& withMe, std::intptr_t desiredLength)
+static std::wstring PadTheRight(std::wstring const& padMe, wchar_t const& withMe, intptr_t desiredLength)
 {
-    std::intptr_t lengthDifference = desiredLength - padMe.length();
+    intptr_t lengthDifference = desiredLength - padMe.length();
     if (lengthDifference > 0)
     {
         return padMe + std::wstring(lengthDifference, withMe);
@@ -62,9 +63,9 @@ static std::wstring PadTheRight(std::wstring const& padMe, wchar_t const& withMe
     }
 }
 
-static std::wstring PadCentered(std::wstring const& padMe, wchar_t const& withMe, std::intptr_t desiredLength)
+static std::wstring PadCentered(std::wstring const& padMe, wchar_t const& withMe, intptr_t desiredLength)
 {
-    std::intptr_t lengthDifference = desiredLength - padMe.length();
+    intptr_t lengthDifference = desiredLength - padMe.length();
     if (lengthDifference > 0)
     {
         return std::wstring((size_t)ceil((float)lengthDifference / 2.0), withMe) + padMe +
