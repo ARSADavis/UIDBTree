@@ -3,6 +3,8 @@
 #include "HTMLLogger/HTMLLogger.h"
 #include "ErrorGlobals.h"
 
+//TODO: Put these functions in a tester class.
+
 void PrintTreeStatus(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 {
     htmlLogger->LogTextLine(L"Tree empty: " + std::to_wstring(tree->IsEmpty()));
@@ -12,6 +14,13 @@ void PrintTreeStatus(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 void PrintTree(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreePrintingTypes treePrintingType)
 {
     htmlLogger->LogWStringInsert(L"<pre>" + UIDBTree::ToWString(tree.get(), treePrintingType) + L"</pre>");
+}
+
+void PrintTreeBounds(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
+{
+    htmlLogger->LogTextLine(L"Tree bounds: { " +
+        UIDBNode::ToWString(tree->GetLowestNodeByKey(tree->GetRootNode())) + L" } to { " +
+        UIDBNode::ToWString(tree->GetHighestNodeByKey(tree->GetRootNode())) + L" }");
 }
 
 void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
@@ -31,10 +40,13 @@ void FindNode(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyTy
 
 void testTreeInserts(HTMLLogger* htmlLogger)
 {
+    //TODO: Test duplicates!
+
     //Create a UIDBTree.
     std::unique_ptr<UIDBTree> tree(new UIDBTree());
     htmlLogger->LogTextLine(L"New tree");
     PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
+    PrintTreeBounds(htmlLogger, tree);
 
     FindNode(htmlLogger, tree, -57);
     FindNode(htmlLogger, tree, 234);
@@ -54,6 +66,7 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     {
         InsertData(htmlLogger, tree, key, WStringToBV(L"data" + std::to_wstring(key)));
         PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
+        PrintTreeBounds(htmlLogger, tree);
         for (TreeKeyType key: keys)
         {
             FindNode(htmlLogger, tree, key);
