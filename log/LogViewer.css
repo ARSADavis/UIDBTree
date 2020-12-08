@@ -103,13 +103,18 @@ input[type="button"]:active, #logFileBrowseButton:active {
     color: red;
 }
 
+/* Result. */
+.res {
+    color: burlywood;
+}
+
 .key {
     font-weight: bold;
     color: white;
 }
 
 .val {
-    color: darkslateblue;
+    color: slateblue;
 }
 
 .leaf {

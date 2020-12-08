@@ -38,19 +38,61 @@ unsigned char UIDBTree::GetMaxDepth()
     return maxDepth;
 }
 
-//UIDBNode* UIDBTree::GetLowestNodeByKey()
-//{
+UIDBNode* UIDBTree::GetLowestNodeByKey(UIDBNode* topNode)
+{
+    if (topNode == nullptr)
+    {
+        return topNode;
+    }
+    UIDBNode* nextNode = topNode->leftChildNode.get();
+    while (nextNode != nullptr)
+    {
+        topNode = nextNode;
+        nextNode = nextNode->leftChildNode.get();
+    }
+    return topNode;
+}
+UIDBNode* UIDBTree::GetHighestNodeByKey(UIDBNode* topNode)
+{
+    if (topNode == nullptr)
+    {
+        return topNode;
+    }
+    UIDBNode* nextNode = topNode->rightChildNode.get();
+    while (nextNode != nullptr)
+    {
+        topNode = nextNode;
+        nextNode = topNode->rightChildNode.get();
+    }
+    return topNode;
+}
 
-//}
-//UIDBNode* UIDBTree::GetHighestNodeByKey()
-//{
-
-//}
-
-//std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> UIDBTree::FindNodesByKey()
-//{
-
-//}
+std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::FindNodeByKey(ByteVector key)
+{
+    char comparisonResult;
+    UIDBNode* currentNode = rootNode.get();
+    while (currentNode != nullptr)
+    {
+        //Compare the current node's key with the given key, to decide what to do next.
+        comparisonResult = UIDBTree::compareKeys(currentNode->key, key);
+        if (comparisonResult > 0)
+        {
+            //Search key > current key; navigate to the right child.
+            currentNode = currentNode->rightChildNode.get();
+        }
+        else if (comparisonResult < 0)
+        {
+            //Search key < current key; navigate to the left child.
+            currentNode = currentNode->leftChildNode.get();
+        }
+        else
+        {
+            //Search key == current key; found it!
+            return { UIDBTreeResultCode::Success, currentNode };
+        }
+    }
+    return { UIDBTreeResultCode::NoNodeFound, nullptr };
+}
 
 
 //Returns the sign of the comparison of the two keys: second > first: 1, second < first: -1, second == first: 0.

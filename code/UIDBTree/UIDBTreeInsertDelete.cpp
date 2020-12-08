@@ -28,9 +28,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
             comparisonResult = UIDBTree::compareKeys(currentNode->key, key);
             if (comparisonResult > 0)
             {
-                //New key > current key.
-
-                //Navigate to the right child.
+                //New key > current key; navigate to the right child.
                 currentNode = currentNode->rightChildNode.get();
                 if (currentNode == nullptr)
                 {
@@ -47,9 +45,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
             }
             else if (comparisonResult < 0)
             {
-                //New key < current key.
-
-                //Navigate to the left child.
+                //New key < current key; navigate to the left child.
                 currentNode = currentNode->leftChildNode.get();
                 if (currentNode == nullptr)
                 {
@@ -86,7 +82,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
     }
 }
 
-//UIDBTreeResultCode UIDBTree::DeleteNodeByKey()
-//{
-
-//}
+UIDBTreeResultCode UIDBTree::DeleteNodeByKey(ByteVector key)
+{
+    return UIDBTreeResultCode::Error;
+}

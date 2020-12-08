@@ -18,8 +18,16 @@ void PrintTree(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreePrin
 void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
 {
     std::pair<UIDBTreeResultCode, UIDBNode*> insertResult = tree->InsertNodeByKey(TToBV(key), value);
-    htmlLogger->LogTextLine(L"Inserted { " + UIDBNode::ToWString(insertResult.second) + L" } into tree: " +
-        UIDBTreeResultCodeMap.at(insertResult.first));
+    htmlLogger->LogTextLine(L"Inserted { " + UIDBNode::ToWString(insertResult.second) +
+        L" }: <span class=\"res\">" + UIDBTreeResultCodeMap.at(insertResult.first) + L"</span>");
+}
+
+void FindNode(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key)
+{
+    std::pair<UIDBTreeResultCode, UIDBNode*> findResult = tree->FindNodeByKey(TToBV(key));
+    htmlLogger->LogTextLine(L"Searched for " + std::to_wstring(key) +
+        L": <span class=\"res\">" + UIDBTreeResultCodeMap.at(findResult.first) + L"</span>" +
+        (findResult.second == nullptr ? L"" : L" { " + UIDBNode::ToWString(findResult.second) + L" }"));
 }
 
 void testTreeInserts(HTMLLogger* htmlLogger)
@@ -28,6 +36,8 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     std::unique_ptr<UIDBTree> tree(new UIDBTree());
     htmlLogger->LogTextLine(L"New tree");
     PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
+    FindNode(htmlLogger, tree, -57);
+    FindNode(htmlLogger, tree, 234);
 
     //These all work.
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 80, 85 });
@@ -40,9 +50,18 @@ void testTreeInserts(HTMLLogger* htmlLogger)
 
     for (TreeKeyType key: keys)
     {
-        InsertData(htmlLogger, tree, key, StringToBV("data"));
+        InsertData(htmlLogger, tree, key, WStringToBV(L"data" + std::to_wstring(key)));
         PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
+        for (TreeKeyType key: keys)
+        {
+            FindNode(htmlLogger, tree, key);
+        }
     }
+
+    FindNode(htmlLogger, tree, -57);
+    FindNode(htmlLogger, tree, 234);
+    htmlLogger->LogNewLine();
+    htmlLogger->LogHR();
 }
 
 int WrappedMain()
