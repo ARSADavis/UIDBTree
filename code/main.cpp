@@ -12,7 +12,6 @@ void PrintTreeStatus(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 void PrintTree(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreePrintingTypes treePrintingType)
 {
     htmlLogger->LogWStringInsert(L"<pre>" + UIDBTree::ToWString(tree.get(), treePrintingType) + L"</pre>");
-    htmlLogger->LogHR();
 }
 
 void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
@@ -36,8 +35,11 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     std::unique_ptr<UIDBTree> tree(new UIDBTree());
     htmlLogger->LogTextLine(L"New tree");
     PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
+
     FindNode(htmlLogger, tree, -57);
     FindNode(htmlLogger, tree, 234);
+    htmlLogger->LogNewLine();
+    htmlLogger->LogHR();
 
     //These all work.
     //std::vector<TreeKeyType> keys({ 50, 25, 75, 80, 85 });
@@ -56,6 +58,8 @@ void testTreeInserts(HTMLLogger* htmlLogger)
         {
             FindNode(htmlLogger, tree, key);
         }
+        htmlLogger->LogNewLine();
+        htmlLogger->LogHR();
     }
 
     FindNode(htmlLogger, tree, -57);
