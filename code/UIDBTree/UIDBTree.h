@@ -17,6 +17,7 @@ class UIDBTree
         UIDBNode* GetHighestNodeByKey(UIDBNode* topNode);
 
         std::pair<UIDBTreeResultCode, UIDBNode*> FindNodeByKey(ByteVector key);
+        std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> TraverseToNodeByKey(ByteVector key);
 
         std::pair<UIDBTreeResultCode, UIDBNode*> InsertNodeByKey(ByteVector key, ByteVector value);
         UIDBTreeResultCode DeleteNodeByKey(ByteVector key);

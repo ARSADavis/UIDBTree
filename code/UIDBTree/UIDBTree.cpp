@@ -94,6 +94,35 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::FindNodeByKey(ByteVector key)
     return { UIDBTreeResultCode::NoNodeFound, nullptr };
 }
 
+std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> UIDBTree::TraverseToNodeByKey(ByteVector key)
+{
+    std::vector<UIDBNode*> traversalHistory;
+    char comparisonResult;
+    UIDBNode* currentNode = rootNode.get();
+    while (currentNode != nullptr)
+    {
+        traversalHistory.push_back(currentNode);
+        //Compare the current node's key with the given key, to decide what to do next.
+        comparisonResult = UIDBTree::compareKeys(currentNode->key, key);
+        if (comparisonResult > 0)
+        {
+            //Search key > current key; navigate to the right child.
+            currentNode = currentNode->rightChildNode.get();
+        }
+        else if (comparisonResult < 0)
+        {
+            //Search key < current key; navigate to the left child.
+            currentNode = currentNode->leftChildNode.get();
+        }
+        else
+        {
+            //Search key == current key; found it!
+            return { UIDBTreeResultCode::Success, traversalHistory };
+        }
+    }
+    return { UIDBTreeResultCode::NoNodeFound, traversalHistory };
+}
+
 
 //Returns the sign of the comparison of the two keys: second > first: 1, second < first: -1, second == first: 0.
 char UIDBTree::compareKeys(ByteVector firstKey, ByteVector secondKey)
