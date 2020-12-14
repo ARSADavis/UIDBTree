@@ -1,20 +1,25 @@
 #include "UIDBTree.h"
 #include "UIDBTreeBalancing.h"
 
-void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHistory, UIDBNode* lowestNode,
+void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHistory, bool isRightChild,
     char propagatingChange)
 {
     //Apply any balance changes, starting with the parent of the node and working up to the root node. Check for the
     //need to rebalance each of the subtrees along the way.
-    UIDBNode* childNode = lowestNode;
+    UIDBNode* childNode = nullptr;
     char previousBalance;
     UIDBNode* primaryParentNode;
     UIDBNode* newPrimaryNode, * secondaryNode, * tertiaryNode, * quaternaryLeftNode, * quaternaryRightNode;
     bool rebalancing;
     for (UIDBNode* primaryNode: std::ranges::reverse_view(traversalHistory))
     {
+        //For the first iteration, childNode will be nullptr. isRightChild will instead rely upon the value passed in.
+        if (childNode != nullptr)
+        {
+            isRightChild = (childNode == primaryNode->rightChildNode.get());
+        }
         previousBalance = primaryNode->subtreeMaxDepthBalance;
-        if (childNode == primaryNode->rightChildNode.get())
+        if (isRightChild)
         {
             //Child node is right child.
             primaryNode->subtreeMaxDepthBalance += propagatingChange;
@@ -313,6 +318,7 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryParentNode->rightChildNode.reset(newPrimaryNode);
                 newPrimaryNode->parentNode = primaryParentNode;
                 //Balance change will be handled at the next level up, via. propagatingChange, if necessary.
+                childNode = newPrimaryNode;
             }
             else
             {
@@ -321,6 +327,7 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryParentNode->leftChildNode.reset(newPrimaryNode);
                 newPrimaryNode->parentNode = primaryParentNode;
                 //Balance change will be handled at the next level up, via. propagatingChange, if necessary.
+                childNode = newPrimaryNode;
             }
             if (propagatingChange == 0)
             {

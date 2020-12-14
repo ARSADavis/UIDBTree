@@ -29,7 +29,7 @@ class UIDBTree
         std::unique_ptr<UIDBNode> rootNode;
         bool duplicatesAllowed;
 
-        void propagateBalanceChange(const std::vector<UIDBNode*>& traversalHistory, UIDBNode* lowestNode,
+        void propagateBalanceChange(const std::vector<UIDBNode*>& traversalHistory, bool isRightChild,
             char propagatingChange);
 
         static char compareKeys(ByteVector firstKey, ByteVector secondKey);

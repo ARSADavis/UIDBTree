@@ -30,7 +30,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
             currentNode->parentNode = deepestTraversalNode;
             deepestTraversalNode->rightChildNode.reset(currentNode);
             ++treeNodeCount;
-            propagateBalanceChange(traversalHistory, currentNode, 1);
+            propagateBalanceChange(traversalHistory, true, 1);
             return { UIDBTreeResultCode::Success, currentNode };
         }
         else if (comparisonResult < 0)
@@ -42,7 +42,7 @@ std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::InsertNodeByKey(ByteVector ke
             currentNode->parentNode = deepestTraversalNode;
             deepestTraversalNode->leftChildNode.reset(currentNode);
             ++treeNodeCount;
-            propagateBalanceChange(traversalHistory, currentNode, 1);
+            propagateBalanceChange(traversalHistory, false, 1);
             return { UIDBTreeResultCode::Success, currentNode };
         }
         else
