@@ -38,11 +38,11 @@ unsigned char UIDBTree::GetMaxDepth()
     return maxDepth;
 }
 
-UIDBNode* UIDBTree::GetLowestNodeByKey(UIDBNode* topNode)
+std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::GetLowestNodeByKey(UIDBNode* topNode)
 {
     if (topNode == nullptr)
     {
-        return topNode;
+        return { UIDBTreeResultCode::NodeWasNullptrError, topNode };
     }
     UIDBNode* nextNode = topNode->leftChildNode.get();
     while (nextNode != nullptr)
@@ -50,13 +50,30 @@ UIDBNode* UIDBTree::GetLowestNodeByKey(UIDBNode* topNode)
         topNode = nextNode;
         nextNode = nextNode->leftChildNode.get();
     }
-    return topNode;
+    return { UIDBTreeResultCode::Success, topNode };
 }
-UIDBNode* UIDBTree::GetHighestNodeByKey(UIDBNode* topNode)
+std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> UIDBTree::TraverseToLowestNodeByKey(
+    UIDBNode* topNode, std::vector<UIDBNode*> startingTraversalHistory)
+{
+    std::vector<UIDBNode*> traversalHistory = startingTraversalHistory;
+    if (topNode == nullptr)
+    {
+        return { UIDBTreeResultCode::NoNodeFound, traversalHistory };
+    }
+    UIDBNode* nextNode = topNode->leftChildNode.get();
+    while (nextNode != nullptr)
+    {
+        traversalHistory.push_back(nextNode);
+        topNode = nextNode;
+        nextNode = nextNode->leftChildNode.get();
+    }
+    return { UIDBTreeResultCode::Success, traversalHistory };
+}
+std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::GetHighestNodeByKey(UIDBNode* topNode)
 {
     if (topNode == nullptr)
     {
-        return topNode;
+        return { UIDBTreeResultCode::NodeWasNullptrError, topNode };
     }
     UIDBNode* nextNode = topNode->rightChildNode.get();
     while (nextNode != nullptr)
@@ -64,7 +81,24 @@ UIDBNode* UIDBTree::GetHighestNodeByKey(UIDBNode* topNode)
         topNode = nextNode;
         nextNode = topNode->rightChildNode.get();
     }
-    return topNode;
+    return { UIDBTreeResultCode::Success, topNode };
+}
+std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> UIDBTree::TraverseToHighestNodeByKey(
+    UIDBNode* topNode, std::vector<UIDBNode*> startingTraversalHistory)
+{
+    std::vector<UIDBNode*> traversalHistory = startingTraversalHistory;
+    if (topNode == nullptr)
+    {
+        return { UIDBTreeResultCode::NoNodeFound, traversalHistory };
+    }
+    UIDBNode* nextNode = topNode->rightChildNode.get();
+    while (nextNode != nullptr)
+    {
+        traversalHistory.push_back(nextNode);
+        topNode = nextNode;
+        nextNode = topNode->rightChildNode.get();
+    }
+    return { UIDBTreeResultCode::Success, traversalHistory };
 }
 
 std::pair<UIDBTreeResultCode, UIDBNode*> UIDBTree::FindNodeByKey(ByteVector key)

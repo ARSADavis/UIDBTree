@@ -13,11 +13,16 @@ class UIDBTree
         UIDBNode* GetRootNode();
         unsigned char GetMaxDepth();
 
-        UIDBNode* GetLowestNodeByKey(UIDBNode* topNode);
-        UIDBNode* GetHighestNodeByKey(UIDBNode* topNode);
+        std::pair<UIDBTreeResultCode, UIDBNode*> GetLowestNodeByKey(UIDBNode* topNode);
+        std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> TraverseToLowestNodeByKey(
+            UIDBNode* topNode, std::vector<UIDBNode*> startingTraversalHistory = {});
+        std::pair<UIDBTreeResultCode, UIDBNode*> GetHighestNodeByKey(UIDBNode* topNode);
+        std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> TraverseToHighestNodeByKey(
+            UIDBNode* topNode, std::vector<UIDBNode*> startingTraversalHistory = {});
 
         std::pair<UIDBTreeResultCode, UIDBNode*> FindNodeByKey(ByteVector key);
-        std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> TraverseToNodeByKey(ByteVector key);
+        std::pair<UIDBTreeResultCode, std::vector<UIDBNode*>> TraverseToNodeByKey(ByteVector key,
+            std::vector<UIDBNode*> startingTraversalHistory = {});
 
         std::pair<UIDBTreeResultCode, UIDBNode*> InsertNodeByKey(ByteVector key, ByteVector value);
         UIDBTreeResultCode DeleteNodeByKey(ByteVector key);
