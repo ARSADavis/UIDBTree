@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 #include <map>
-#include <ranges>
 #include <optional>
 #include <string>
 #include <sstream>
@@ -68,8 +67,8 @@ static std::wstring PadCentered(std::wstring const& padMe, wchar_t const& withMe
     intptr_t lengthDifference = desiredLength - padMe.length();
     if (lengthDifference > 0)
     {
-        return std::wstring((size_t)ceil((float)lengthDifference / 2.0), withMe) + padMe +
-            std::wstring((size_t)floor((float)lengthDifference / 2.0), withMe);
+        return std::wstring((std::size_t)ceil((float)lengthDifference / 2.0), withMe) + padMe +
+            std::wstring((std::size_t)floor((float)lengthDifference / 2.0), withMe);
     }
     else
     {

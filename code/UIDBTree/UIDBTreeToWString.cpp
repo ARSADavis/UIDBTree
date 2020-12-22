@@ -7,11 +7,11 @@ std::wstring UIDBTree::ToWString(UIDBTree* convertMe, TreePrintingTypes treePrin
     {
         if (treePrintingType == TreePrintingTypes::HorizontalHTML)
         {
-            return L"<span class=\"leaf\">&lt;N&gt;</span>";
+            return L"<span class=\"nullptr\">&lt;N&gt;</span>";
         }
         else
         {
-            return L"<span class=\"leaf\">&lt;nullptr&gt;</span>";
+            return L"<span class=\"nullptr\">&lt;nullptr&gt;</span>";
         }
     }
     else
@@ -34,7 +34,7 @@ std::wstring UIDBTree::ToWString(UIDBTree* convertMe, TreePrintingTypes treePrin
             }
             case TreePrintingTypes::HorizontalHTML:
             {
-                unsigned char treeMaxDepth = convertMe->GetMaxDepth();
+                unsigned char treeMaxDepth = convertMe->GetMaxDepth()->Depth;
                 //Construct a bunch of wstringstreams, two for each level of the tree + one for the deepest leaves.
                 std::vector<std::unique_ptr<std::wstringstream>> wssLevels(treeMaxDepth * 2 + 1);
                 for (std::unique_ptr<std::wstringstream>& currentWSS: wssLevels)
@@ -140,8 +140,8 @@ void UIDBTree::treeNodeToWStringHRecursive(std::vector<std::unique_ptr<std::wstr
     static const float keyToMidNotch = charsPerNodeKey - charsSideOfNotch;
 
     float levelsFromBottom = (float)treeMaxDepth - (float)currentLevel;
-    size_t nodeKeyIndex = currentLevel * 2;
-    size_t treeCharactersIndex = nodeKeyIndex + 1;
+    std::size_t nodeKeyIndex = currentLevel * 2;
+    std::size_t treeCharactersIndex = nodeKeyIndex + 1;
 
     //First, the spacing around the node keys, if any, based upon the levels away from the bottom.
     if (isFirstOnLevel)

@@ -117,7 +117,7 @@ input[type="button"]:active, #logFileBrowseButton:active {
     color: slateblue;
 }
 
-.leaf {
+.nullptr {
     font-style: italic;
     color: gray;
 }

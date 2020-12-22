@@ -15,6 +15,7 @@ class UIDBNode
 
     public:
         UIDBNode();
+        ~UIDBNode();
 
         UIDBNode* GetParentNode();
         UIDBNode* GetLeftChildNode();

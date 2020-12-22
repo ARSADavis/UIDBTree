@@ -6,6 +6,20 @@ UIDBNode::UIDBNode()
     parentNode = nullptr;
 }
 
+UIDBNode::~UIDBNode()
+{
+    //Recursively delete all right descendants via. RAII deconstruction.
+    if (rightChildNode.get() != nullptr)
+    {
+        rightChildNode.reset();
+    }
+    //Recursively delete all left descendants via. RAII deconstruction.
+    if (leftChildNode.get() != nullptr)
+    {
+        leftChildNode.reset();
+    }
+}
+
 
 UIDBNode* UIDBNode::GetParentNode()
 {
@@ -47,10 +61,10 @@ std::wstring UIDBNode::ToWString(UIDBNode* convertMe, TreePrintingTypes treePrin
         switch (treePrintingType)
         {
             case TreePrintingTypes::HorizontalHTML:
-                wss << L"<span class=\"leaf\">" << PadCentered(L"&lt;L&gt;", L' ', 5 + 6) << L"</span>";
+                wss << L"<span class=\"nullptr\">" << PadCentered(L"&lt;N&gt;", L' ', 5 + 6) << L"</span>";
                 break;
             case TreePrintingTypes::VerticalHTML:
-                wss << L"<span class=\"leaf\">&lt;leaf&gt;</span>";
+                wss << L"<span class=\"nullptr\">&lt;nullptr&gt;</span>";
                 break;
         }
     }

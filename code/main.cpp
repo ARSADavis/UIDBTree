@@ -19,23 +19,30 @@ void PrintTree(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreePrin
 void PrintTreeBounds(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 {
     htmlLogger->LogTextLine(L"Tree bounds: { " +
-        UIDBNode::ToWString(tree->GetLowestNodeByKey(tree->GetRootNode())) + L" } to { " +
-        UIDBNode::ToWString(tree->GetHighestNodeByKey(tree->GetRootNode())) + L" }");
+        UIDBNode::ToWString(tree->GetLowestNodeByKey(tree->GetRootNode())->Node) + L" } to { " +
+        UIDBNode::ToWString(tree->GetHighestNodeByKey(tree->GetRootNode())->Node) + L" }");
 }
 
 void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
 {
-    std::pair<UIDBTreeResultCode, UIDBNode*> insertResult = tree->InsertNodeByKey(TToBV(key), value);
-    htmlLogger->LogTextLine(L"Inserted { " + UIDBNode::ToWString(insertResult.second) +
-        L" }: <span class=\"res\">" + UIDBTreeResultCodeMap.at(insertResult.first) + L"</span>");
+    UIDBTree::OperationResult* insertResult = tree->InsertNodeByKey(TToBV(key), value);
+    htmlLogger->LogTextLine(L"Inserted { " + insertResult->NodeToWString() +
+        L" }: <span class=\"res\">" + insertResult->HadErrorToWString() + L"</span>");
 }
 
 void FindNode(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key)
 {
-    std::pair<UIDBTreeResultCode, UIDBNode*> findResult = tree->FindNodeByKey(TToBV(key));
+    UIDBTree::OperationResult* findResult = tree->FindNodeOrNearbyByKey(TToBV(key));
     htmlLogger->LogTextLine(L"Searched for " + std::to_wstring(key) +
-        L": <span class=\"res\">" + UIDBTreeResultCodeMap.at(findResult.first) + L"</span>" +
-        (findResult.second == nullptr ? L"" : L" { " + UIDBNode::ToWString(findResult.second) + L" }"));
+        L": <span class=\"res\">" + findResult->HadErrorToWString() + L" " + findResult->FoundExactNodeToWString() +
+        L"</span>" + (findResult->FoundExactNode ? L" { " + findResult->NodeToWString() + L" }" : L""));
+}
+
+void DeleteNode(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key)
+{
+    UIDBTree::OperationResult* deleteResult = tree->DeleteNodeByKey(TToBV(key));
+    htmlLogger->LogTextLine(L"Deleted node with key " + std::to_wstring(key) +
+        L": <span class=\"res\">" + deleteResult->HadErrorToWString() + L"</span>");
 }
 
 void testTreeInserts(HTMLLogger* htmlLogger)
@@ -75,10 +82,24 @@ void testTreeInserts(HTMLLogger* htmlLogger)
         htmlLogger->LogHR();
     }
 
-    FindNode(htmlLogger, tree, -57);
     FindNode(htmlLogger, tree, 234);
     htmlLogger->LogNewLine();
     htmlLogger->LogHR();
+
+    std::vector<TreeKeyType> deleteKeys({ 10, 5, 3, 7, 2, 9, 4, 1, 6, 8 });
+
+    for (TreeKeyType key: deleteKeys)
+    {
+        DeleteNode(htmlLogger, tree, key);
+        PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
+        PrintTreeBounds(htmlLogger, tree);
+        for (TreeKeyType key: keys)
+        {
+            FindNode(htmlLogger, tree, key);
+        }
+        htmlLogger->LogNewLine();
+        htmlLogger->LogHR();
+    }
 }
 
 int WrappedMain()

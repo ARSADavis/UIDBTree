@@ -1,9 +1,14 @@
 #include "UIDBTree.h"
 #include "UIDBTreeBalancing.h"
+#include <iostream>
 
-void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHistory, bool isRightChild,
-    char propagatingChange)
+void UIDBTree::propagateBalanceChange(UIDBNode* primaryNode, bool isRightChild, char propagatingChange)
 {
+    //If starting with a nullptr, then there's nothing to propagate.
+    if (primaryNode == nullptr)
+    {
+        return;
+    }
     //Apply any balance changes, starting with the parent of the node and working up to the root node. Check for the
     //need to rebalance each of the subtrees along the way.
     UIDBNode* childNode = nullptr;
@@ -11,63 +16,67 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
     UIDBNode* primaryParentNode;
     UIDBNode* newPrimaryNode, * secondaryNode, * tertiaryNode, * quaternaryLeftNode, * quaternaryRightNode;
     bool rebalancing;
-    for (UIDBNode* primaryNode: std::ranges::reverse_view(traversalHistory))
+    do
     {
-        //For the first iteration, childNode will be nullptr. isRightChild will instead rely upon the value passed in.
-        if (childNode != nullptr)
-        {
-            isRightChild = (childNode == primaryNode->rightChildNode.get());
-        }
         previousBalance = primaryNode->subtreeMaxDepthBalance;
         if (isRightChild)
         {
             //Child node is right child.
             primaryNode->subtreeMaxDepthBalance += propagatingChange;
+        }
+        else
+        {
+            //Child node is left child.
+            primaryNode->subtreeMaxDepthBalance -= propagatingChange;
+        }
+        //Check and see if the propagatingChange has been inconsequential.
+        if (isRightChild)
+        {
+            //Child node is right child.
             if (propagatingChange > 0)
             {
-                //Propagating an increase in depth balance. If the previous balance was less than 0, or left-deep, then
-                //the subtree's max depth has not changed, because it is becoming more balanced.
+                //Propagating an increase in depth balance. If the previous balance was less than 0, or left-deep,
+                //then the subtree's max depth has not changed, because it is becoming more balanced.
                 if (previousBalance < 0)
                 {
-                    //Stop propagating balance changes up the ancestry.
-                    return;
+                    //No more propagation, unless from any rebalancing.
+                    propagatingChange = 0;
                 }
             }
             else
             {
                 //Propagating a decrease in depth balance. If the previous balance was less than or equal to 0, or
-                //balanced/left-deep, then the subtree's max depth has not changed, because it is becoming more
-                //balanced.
+                //balanced/left-deep, then the subtree's max depth has not changed, because the deletion or
+                //rebalance occurred on the shallow side.
                 if (previousBalance <= 0)
                 {
-                    //Stop propagating balance changes up the ancestry.
-                    return;
+                    //No more propagation, unless from any rebalancing.
+                    propagatingChange = 0;
                 }
             }
         }
         else
         {
             //Child node is left child.
-            primaryNode->subtreeMaxDepthBalance -= propagatingChange;
             if (propagatingChange > 0)
             {
-                //Propagating an increase in depth balance. If the previous balance was greater than 0, or right-deep,
-                //then the subtree's max depth has not changed, because it is becoming more balanced.
+                //Propagating an increase in depth balance. If the previous balance was greater than 0, or
+                //right-deep, then the subtree's max depth has not changed, because it is becoming more balanced.
                 if (previousBalance > 0)
                 {
-                    //Stop propagating balance changes up the ancestry.
-                    return;
+                    //No more propagation, unless from any rebalancing.
+                    propagatingChange = 0;
                 }
             }
             else
             {
-                //Propagating a decrease in depth balance. If the previous balance was greater than or equal to 0, or
-                //balanced/right-deep, then the subtree's max depth has not changed, because it is becoming more
-                //balanced.
+                //Propagating a decrease in depth balance. If the previous balance was greater than or equal to 0,
+                //or balanced/right-deep, then the subtree's max depth has not changed, because the deletion or
+                //rebalance occurred on the shallow side.
                 if (previousBalance >= 0)
                 {
-                    //Stop propagating balance changes up the ancestry.
-                    return;
+                    //No more propagation, unless from any rebalancing.
+                    propagatingChange = 0;
                 }
             }
         }
@@ -125,8 +134,8 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryNode->subtreeMaxDepthBalance =
                     GetMaxDepthBalance(secondaryLeftOldMaxDepth, tertiaryLeftOldMaxDepth);
 
-                //After a rebalance, the propagation always becomes a decrease in depth balance.
-                propagatingChange = -secondaryRightNewMaxDepth - 1;
+                //Update the propagatingChange.
+                propagatingChange += secondaryRightNewMaxDepth;
             }
             else
             {
@@ -182,8 +191,8 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryNode->subtreeMaxDepthBalance =
                     GetMaxDepthBalance(secondaryLeftOldMaxDepth, quaternaryLeftMaxDepth);
 
-                //After a rebalance, the propagation always becomes a decrease in depth balance.
-                propagatingChange = -tertiaryLeftNewMaxDepth - 1;
+                //Update the propagatingChange.
+                propagatingChange += tertiaryLeftNewMaxDepth;
             }
             rebalancing = true;
         }
@@ -239,8 +248,8 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryNode->subtreeMaxDepthBalance =
                     GetMaxDepthBalance(tertiaryRightOldMaxDepth, secondaryRightOldMaxDepth);
 
-                //After a rebalance, the propagation always becomes a decrease in depth balance.
-                propagatingChange = -secondaryLeftNewMaxDepth - 1;
+                //Update the propagatingChange.
+                propagatingChange += secondaryLeftNewMaxDepth;
             }
             else
             {
@@ -296,11 +305,12 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryNode->subtreeMaxDepthBalance =
                     GetMaxDepthBalance(quaternaryRightMaxDepth, secondaryRightOldMaxDepth);
 
-                //After a rebalance, the propagation always becomes a decrease in depth balance.
-                propagatingChange = -tertiaryRightNewMaxDepth - 1;
+                //Update the propagatingChange.
+                propagatingChange += tertiaryRightNewMaxDepth;
             }
             rebalancing = true;
         }
+
         if (rebalancing)
         {
             //Update the old primary node's parent as well, if any.
@@ -317,8 +327,6 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryParentNode->rightChildNode.release();
                 primaryParentNode->rightChildNode.reset(newPrimaryNode);
                 newPrimaryNode->parentNode = primaryParentNode;
-                //Balance change will be handled at the next level up, via. propagatingChange, if necessary.
-                childNode = newPrimaryNode;
             }
             else
             {
@@ -326,19 +334,29 @@ void UIDBTree::propagateBalanceChange(const std::vector<UIDBNode*>& traversalHis
                 primaryParentNode->leftChildNode.release();
                 primaryParentNode->leftChildNode.reset(newPrimaryNode);
                 newPrimaryNode->parentNode = primaryParentNode;
-                //Balance change will be handled at the next level up, via. propagatingChange, if necessary.
-                childNode = newPrimaryNode;
             }
-            if (propagatingChange == 0)
-            {
-                //Stop propagating balance changes up the ancestry.
-                return;
-            }
+            childNode = newPrimaryNode;
         }
         else
         {
-            //No rebalance, and propagation continues as before.
             childNode = primaryNode;
         }
+
+        //If propagatingChange is 0 at this point, then the score has been settled.
+        if (propagatingChange == 0)
+        {
+            //Stop propagating balance changes up the ancestry.
+            return;
+        }
+
+        //Next level up.
+        primaryNode = childNode->parentNode;
+        if (primaryNode == nullptr)
+        {
+            //No more ancestry to propagate up to.
+            return;
+        }
+        isRightChild = (childNode == primaryNode->rightChildNode.get());
     }
+    while (true);
 }
