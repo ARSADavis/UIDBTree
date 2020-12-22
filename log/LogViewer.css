@@ -25,6 +25,12 @@ p {
     padding: 8px;
 }
 
+@media print {
+    .dontPrintMe, .dontPrintMe * {
+        display: none !important;
+    }
+}
+
 #controlsDiv {
     position: fixed;
     width: max-content;

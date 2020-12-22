@@ -26,14 +26,14 @@ void PrintTreeBounds(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree)
 void InsertData(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key, ByteVector value)
 {
     UIDBTree::OperationResult* insertResult = tree->InsertNodeByKey(TToBV(key), value);
-    htmlLogger->LogTextLine(L"Inserted { " + insertResult->NodeToWString() +
+    htmlLogger->LogTextLine(L"Inserting { " + insertResult->NodeToWString() +
         L" }: <span class=\"res\">" + insertResult->HadErrorToWString() + L"</span>");
 }
 
 void FindNode(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key)
 {
     UIDBTree::OperationResult* findResult = tree->FindNodeOrNearbyByKey(TToBV(key));
-    htmlLogger->LogTextLine(L"Searched for " + std::to_wstring(key) +
+    htmlLogger->LogTextLine(L"Searching for " + std::to_wstring(key) +
         L": <span class=\"res\">" + findResult->HadErrorToWString() + L" " + findResult->FoundExactNodeToWString() +
         L"</span>" + (findResult->FoundExactNode ? L" { " + findResult->NodeToWString() + L" }" : L""));
 }
@@ -41,7 +41,7 @@ void FindNode(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyTy
 void DeleteNode(HTMLLogger* htmlLogger, std::unique_ptr<UIDBTree>& tree, TreeKeyType key)
 {
     UIDBTree::OperationResult* deleteResult = tree->DeleteNodeByKey(TToBV(key));
-    htmlLogger->LogTextLine(L"Deleted node with key " + std::to_wstring(key) +
+    htmlLogger->LogTextLine(L"Deleting node with key " + std::to_wstring(key) +
         L": <span class=\"res\">" + deleteResult->HadErrorToWString() + L"</span>");
 }
 
@@ -54,8 +54,9 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     htmlLogger->LogTextLine(L"New tree");
     PrintTree(htmlLogger, tree, TreePrintingTypes::HorizontalHTML);
     PrintTreeBounds(htmlLogger, tree);
+    htmlLogger->LogNewLine();
+    htmlLogger->LogHR();
 
-    FindNode(htmlLogger, tree, -57);
     FindNode(htmlLogger, tree, 234);
     htmlLogger->LogNewLine();
     htmlLogger->LogHR();
@@ -86,7 +87,10 @@ void testTreeInserts(HTMLLogger* htmlLogger)
     htmlLogger->LogNewLine();
     htmlLogger->LogHR();
 
-    std::vector<TreeKeyType> deleteKeys({ 10, 5, 3, 7, 2, 9, 4, 1, 6, 8 });
+    //std::vector<TreeKeyType> deleteKeys({ 10, 5, 3, 7, 2, 9, 4, 1, 6, 8 });
+    //std::vector<TreeKeyType> deleteKeys({ 10, 9, 8, 7, 6, 5, 4, 3, 2, 1 });
+    std::vector<TreeKeyType> deleteKeys({ 1, 2, 4, 6, 5, 3, 7, 10, 8, 9 });
+    //std::vector<TreeKeyType> deleteKeys({ 1, 3, 2, 6, 5, 4, 7, 10, 8, 9 });
 
     for (TreeKeyType key: deleteKeys)
     {
@@ -100,6 +104,10 @@ void testTreeInserts(HTMLLogger* htmlLogger)
         htmlLogger->LogNewLine();
         htmlLogger->LogHR();
     }
+
+    DeleteNode(htmlLogger, tree, 9001);
+    htmlLogger->LogNewLine();
+    htmlLogger->LogHR();
 }
 
 int WrappedMain()
